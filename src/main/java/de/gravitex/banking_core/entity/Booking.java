@@ -31,6 +31,9 @@ public class Booking extends IdEntity {
 	@Column(nullable = false)
 	private BigDecimal amount;
 	
+	@ManyToOne
+	private PurposeCategory purposeCategory;
+	
 	@PresentMe(order = 0)
 	@Column(nullable = false)
 	private BigDecimal amountAfterBooking;

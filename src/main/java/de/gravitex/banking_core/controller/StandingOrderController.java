@@ -21,4 +21,9 @@ public class StandingOrderController implements BaseController<StandingOrder> {
 	public List<StandingOrder> findAll() {
 		return standingOrderRepository.findAll();
 	}
+
+	@Override
+	public void patch(StandingOrder entity) {
+		// TODO Auto-generated method stub
+	}
 }

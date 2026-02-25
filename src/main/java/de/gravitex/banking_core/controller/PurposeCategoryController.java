@@ -21,4 +21,9 @@ public class PurposeCategoryController implements BaseController<PurposeCategory
 	public List<PurposeCategory> findAll() {
 		return purposeCategoryRepository.findAll();
 	}
+
+	@Override
+	public void patch(PurposeCategory entity) {
+		// TODO Auto-generated method stub
+	}
 }

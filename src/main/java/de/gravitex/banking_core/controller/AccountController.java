@@ -32,4 +32,9 @@ public class AccountController implements BaseController<Account> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void patch(Account entity) {
+		// TODO Auto-generated method stub
+	}
 }

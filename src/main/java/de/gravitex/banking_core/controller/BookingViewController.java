@@ -33,4 +33,9 @@ public class BookingViewController implements BaseController<BookingView> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public void patch(BookingView entity) {
+		// TODO Auto-generated method stub
+	}
 }

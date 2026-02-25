@@ -5,18 +5,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.gravitex.banking_core.controller.base.BaseController;
 import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.repository.PurposeCategoryRepository;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
 
 @RestController
-public class TradingPartnerController implements BaseController<TradingPartner> {
+// public class TradingPartnerController implements BaseController<TradingPartner> {
+public class TradingPartnerController {
 	
 	@Autowired
 	private TradingPartnerRepository tradingPartnerRepository;
@@ -37,5 +38,11 @@ public class TradingPartnerController implements BaseController<TradingPartner> 
 	@RequestMapping(value = "tradingpartners", method = RequestMethod.GET)
 	public List<TradingPartner> findAll() {
 		return tradingPartnerRepository.findAll();
+	}
+
+	@PatchMapping(path = "tradingpartner")
+	public void patch(@RequestBody TradingPartner entity) {
+		System.out.println("patching trading partner ["+entity+"]...");
+		tradingPartnerRepository.save(entity);
 	}
 }
