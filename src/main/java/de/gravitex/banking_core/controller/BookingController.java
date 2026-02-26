@@ -3,6 +3,7 @@ package de.gravitex.banking_core.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,9 +35,9 @@ public class BookingController {
 	}
 	*/
 	
-	@PatchMapping(path = "booking")
+	@PatchMapping(path = "booking", consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public void patch(@RequestBody Booking entity) {
-		System.out.println("patching booking ["+entity+"]...");
+		System.out.println("patching booking ["+entity+"] with id = "+entity.getId()+"...");
 		bookingRepository.save(entity);
 	}
 }
