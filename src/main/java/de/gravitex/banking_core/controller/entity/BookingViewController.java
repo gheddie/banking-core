@@ -1,4 +1,4 @@
-package de.gravitex.banking_core.controller;
+package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
 
@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.gravitex.banking_core.controller.base.BaseController;
+import de.gravitex.banking_core.controller.entity.base.ViewEntityController;
 import de.gravitex.banking_core.entity.view.BookingView;
 import de.gravitex.banking_core.repository.BookingViewRepository;
 
 @RestController
-public class BookingViewController implements BaseController<BookingView> {
+public class BookingViewController implements ViewEntityController<BookingView> {
 	
 	@Autowired
 	private BookingViewRepository bookingViewRepository;
@@ -32,10 +32,5 @@ public class BookingViewController implements BaseController<BookingView> {
 	public List<BookingView> findAll() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public void patch(BookingView entity) {
-		// TODO Auto-generated method stub
 	}
 }

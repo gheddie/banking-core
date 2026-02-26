@@ -1,4 +1,4 @@
-package de.gravitex.banking_core.controller;
+package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
 
@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.CreditInstitute;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 
 @RestController
-// public class CreditInstituteController implements BaseController<CreditInstitute> {
-public class CreditInstituteController {
+public class CreditInstituteController implements PersistableEntityController<CreditInstitute> {
 	
 	@Autowired
 	private CreditInstituteRepository creditInstituteRepository;
@@ -24,14 +24,6 @@ public class CreditInstituteController {
 		return creditInstituteRepository.findAll();
 	}
 
-	/*
-	// @Override
-	@PatchMapping(path = "creditinstitute")
-	public void patch(@RequestParam("entity") CreditInstitute entity) {
-		System.out.println("patching credit institute ["+entity+"]...");
-	}
-	*/
-	
 	@PatchMapping(path = "creditinstitute")
 	public void patch(@RequestBody CreditInstitute entity) {
 		System.out.println("patching credit institute ["+entity+"]...");

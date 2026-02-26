@@ -1,4 +1,4 @@
-package de.gravitex.banking_core.controller;
+package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
 
@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.gravitex.banking_core.controller.base.BaseController;
+import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 
 @RestController
-public class AccountController implements BaseController<Account> {
+public class AccountController implements PersistableEntityController<Account> {
 	
 	@Autowired
 	private CreditInstituteRepository creditInstituteRepository;

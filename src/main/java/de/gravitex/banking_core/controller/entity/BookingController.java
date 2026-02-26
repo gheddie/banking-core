@@ -1,4 +1,4 @@
-package de.gravitex.banking_core.controller;
+package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
 
@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.repository.BookingRepository;
 
 @RestController
-// public class BookingController implements BaseController<Booking> {
-public class BookingController {
+public class BookingController implements PersistableEntityController<Booking> {
 	
 	@Autowired
 	private BookingRepository bookingRepository;
@@ -26,18 +26,8 @@ public class BookingController {
 		return bookingRepository.findAll();
 	}
 
-	/*
-	@Override
-	@PatchMapping(path = "booking")
-	public void patch(Booking entity) {
-		// bookingRepository.save(entity);
-		System.out.println("patch --> " + entity);
-	}
-	*/
-	
 	@PatchMapping(path = "booking", consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public void patch(@RequestBody Booking entity) {
-		System.out.println("patching booking ["+entity+"] with id = "+entity.getId()+"...");
 		bookingRepository.save(entity);
 	}
 }

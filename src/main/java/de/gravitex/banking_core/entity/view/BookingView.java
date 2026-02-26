@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import de.gravitex.banking_core.entity.annotation.PresentMe;
 import de.gravitex.banking_core.entity.base.NoIdEntity;
 import de.gravitex.banking_core.formatter.DateTimeValueFormatter;
-import de.gravitex.banking_core.formatter.DateValueFormatter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
