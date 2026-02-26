@@ -1,10 +1,11 @@
 package de.gravitex.banking_core.entity.view;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 import de.gravitex.banking_core.entity.annotation.PresentMe;
 import de.gravitex.banking_core.entity.base.NoIdEntity;
+import de.gravitex.banking_core.formatter.DateTimeValueFormatter;
 import de.gravitex.banking_core.formatter.DateValueFormatter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,8 +21,8 @@ public class BookingView extends NoIdEntity {
 	@Id
 	private Long id;
 	
-	@PresentMe(valueFormatter = DateValueFormatter.class, sortMe = true, order=1)
-	private Date bookingDate;
+	@PresentMe(valueFormatter = DateTimeValueFormatter.class, sortMe = true, order=1)
+	private LocalDate bookingDate;
 	
 	@PresentMe(order = 10)
 	private String text;

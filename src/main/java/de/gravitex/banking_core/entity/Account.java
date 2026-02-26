@@ -1,6 +1,6 @@
 package de.gravitex.banking_core.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import de.gravitex.banking_core.entity.annotation.PresentMe;
 import de.gravitex.banking_core.entity.base.IdEntity;
@@ -28,7 +28,7 @@ public class Account extends IdEntity {
 	private ImportType importType;
 	
 	@Column(nullable = false)
-	private Date latestBookingDate;
+	private LocalDate latestBookingDate;
 	
 	@PresentMe(order = 30)
 	@ManyToOne

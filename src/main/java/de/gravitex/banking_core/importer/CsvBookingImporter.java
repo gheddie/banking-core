@@ -27,7 +27,7 @@ public class CsvBookingImporter extends BookingImporter {
 			booking.setAmount(getBigDecimal(aCsvLine.getValueByKey("Betrag")));
 			booking.setAmountAfterBooking(getBigDecimal(aCsvLine.getValueByKey("Saldo nach Buchung")));
 			booking.setTradingPartnerKey(aCsvLine.getValueByKey("Name Zahlungsbeteiligter"));
-			booking.setBookingDate(getDate(aCsvLine.getValueByKey("Buchungstag")));
+			booking.setBookingDate(parseLocalDate(aCsvLine.getValueByKey("Buchungstag")));
 			
 			bookings.add(booking);
 		}

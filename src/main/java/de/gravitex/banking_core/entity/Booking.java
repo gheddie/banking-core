@@ -1,7 +1,7 @@
 package de.gravitex.banking_core.entity;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 import de.gravitex.banking_core.entity.annotation.PresentMe;
 import de.gravitex.banking_core.entity.base.IdEntity;
@@ -44,7 +44,7 @@ public class Booking extends IdEntity {
 	
 	@PresentMe(order = 0)
 	@Column(nullable = false)
-	private Date bookingDate;	
+	private LocalDate bookingDate;	
 	
 	@ManyToOne
 	@JoinColumn(nullable = false)

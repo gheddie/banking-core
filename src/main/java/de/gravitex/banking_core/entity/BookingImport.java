@@ -1,6 +1,6 @@
 package de.gravitex.banking_core.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import de.gravitex.banking_core.entity.base.IdEntity;
 import jakarta.persistence.Column;
@@ -21,5 +21,5 @@ public class BookingImport extends IdEntity {
 	private Account account;
 	
 	@Column(nullable = false)
-	private Date importDate;
+	private LocalDate importDate;
 }

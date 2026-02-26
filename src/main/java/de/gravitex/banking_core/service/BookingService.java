@@ -1,6 +1,7 @@
 package de.gravitex.banking_core.service;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import de.gravitex.banking_core.repository.BookingImportItemRepository;
 import de.gravitex.banking_core.repository.BookingImportRepository;
 import de.gravitex.banking_core.repository.BookingRepository;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
+import de.gravitex.banking_core.util.DateUtil;
 import de.gravitex.banking_core.util.StringHelper;
 import jakarta.transaction.Transactional;
 
@@ -99,7 +101,7 @@ public class BookingService {
 		BookingImport bookingImport = new BookingImport();
 		bookingImport.setFileName(aImportFile.getName());
 		bookingImport.setAccount(account);
-		bookingImport.setImportDate(new Date());
+		bookingImport.setImportDate(LocalDate.now());
 		BookingImport createdBookingImport = bookingImportRepository.save(bookingImport);
 		int aItemPos = 0;
 		for (Booking aBooking : aBookings) {			
@@ -221,7 +223,7 @@ public class BookingService {
 			List<String> tmp = new ArrayList<>();
 
 			// self
-			tmp.add(String.valueOf(aBooking.getBookingDate().getTime()));
+			tmp.add(String.valueOf(DateUtil.getMilliSeconds(aBooking.getBookingDate())));
 			tmp.add(aBooking.getText());
 			tmp.add(aBooking.getPurposeOfUse());
 			tmp.add(aBooking.getAmount().toString());

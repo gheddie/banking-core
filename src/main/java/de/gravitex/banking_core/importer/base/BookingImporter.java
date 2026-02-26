@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +19,7 @@ import de.gravitex.banking_core.entity.Booking;
 
 public abstract class BookingImporter {
 	
-	private static final SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 	public abstract List<Booking> generateBookings(File file);
 	
@@ -42,15 +45,8 @@ public abstract class BookingImporter {
 		return new BigDecimal(aValue);
 	}
 	
-	protected Date getDate(String aValue) {
-		// return new Date();
-		try {
-			Date result = formatter.parse(aValue);
-			return result;
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+	protected LocalDate parseLocalDate(String aDateString) {
+		LocalDate date = LocalDate.parse(aDateString, formatter);
+		return date;
 	}
 }
