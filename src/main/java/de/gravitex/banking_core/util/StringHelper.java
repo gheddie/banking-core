@@ -27,4 +27,8 @@ public class StringHelper {
 		}
 		return hexString.toString();
 	}
+
+	public static boolean isBlank(String value) {
+		return value == null || value.isEmpty();
+	}
 }

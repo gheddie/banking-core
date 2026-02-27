@@ -38,6 +38,8 @@ public class BookingView extends NoIdEntity {
 	@PresentMe(order = 50)
 	private String purposeKey;
 	
+	private String bookingPurposeKey;
+	
 	private Long accountId;
 	
 	private Long tradingPartnerId;

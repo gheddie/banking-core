@@ -2,6 +2,8 @@ package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import de.gravitex.banking_core.repository.TradingPartnerRepository;
 
 @RestController
 public class TradingPartnerController implements PersistableEntityController<TradingPartner> {
+	
+	private Logger logger = LoggerFactory.getLogger(TradingPartnerController.class);
 	
 	@Autowired
 	private TradingPartnerRepository tradingPartnerRepository;
@@ -44,7 +48,7 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 
 	@PatchMapping(path = "tradingpartner")
 	public ResponseEntity<TradingPartner> patch(@RequestBody TradingPartner entity) {
-		System.out.println("patching trading partner ["+entity+"]...");
+		logger.info("patching trading partner ["+entity+"]...");
 		return new ResponseEntity<TradingPartner>(tradingPartnerRepository.save(entity), HttpStatus.OK);
 	}
 }

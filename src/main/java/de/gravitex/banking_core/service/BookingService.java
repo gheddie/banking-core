@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class BookingService {
+	
+	private Logger logger = LoggerFactory.getLogger(BookingService.class);
 
 	@Value("${import.rootdir}")
 	private String rootDirectory;
@@ -57,11 +61,11 @@ public class BookingService {
 	}
 
 	public void importBookings() {
-		System.out.println("importing all bookings [" + rootDirectory + "]...");
+		logger.info("importing all bookings [" + rootDirectory + "]...");
 		for (Account account : accountRepository.findAll()) {
 			ImportDescriptor importDescriptor = getImportDescriptor(account);
 			String importPath = importDescriptor.buildImportPath();
-			System.out.println("importing bookings for account [" + account + "] --> Pfad: " + importPath + " ["
+			logger.info("importing bookings for account [" + account + "] --> Pfad: " + importPath + " ["
 					+ account.getImportType() + "]");
 			processFiles(importPath, account, importDescriptor);
 		}
@@ -70,7 +74,6 @@ public class BookingService {
 	@Transactional
 	private void processFiles(String directoryPath, Account account, ImportDescriptor importDescriptor) {
 		File directory = new File(directoryPath);
-		System.out.println(directory);
 		File[] listedFiles = directory.listFiles();
 		if (listedFiles != null && listedFiles.length > 0) {
 			for (File file : listedFiles) {
@@ -90,7 +93,7 @@ public class BookingService {
 			}
 			List<Booking> persistedBookings = persistNewBookings(newBookings, importDescriptor);
 			if (persistedBookings == null || persistedBookings.isEmpty()) {
-				System.out.println("Keine neuen Umsätze in Datei[" + file.getName() + "] --> kein Import erstellt!!!");
+				logger.info("Keine neuen Umsätze in Datei[" + file.getName() + "] --> kein Import erstellt!!!");
 			}
 			createImport(file, account, persistedBookings);
 		}
@@ -202,8 +205,8 @@ public class BookingService {
 		}
 
 		public void summarize() {
-			System.out.println(newBookings + " new bookings imported for account --> " + account);
-			System.out.println(ignoredBookings + " bookings ignored (NOT imported) for account --> " + account);
+			logger.info(newBookings + " new bookings imported for account --> " + account);
+			logger.info(ignoredBookings + " bookings ignored (NOT imported) for account --> " + account);
 		}
 
 		public boolean hasBooking(Booking newBooking) {

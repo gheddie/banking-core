@@ -2,6 +2,8 @@ package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import de.gravitex.banking_core.repository.CreditInstituteRepository;
 
 @RestController
 public class CreditInstituteController implements PersistableEntityController<CreditInstitute> {
+	
+	private Logger logger = LoggerFactory.getLogger(CreditInstituteController.class);
 
 	@Autowired
 	private CreditInstituteRepository creditInstituteRepository;
@@ -27,8 +31,13 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 	}
 
 	@PatchMapping(path = "creditinstitute")
-	public ResponseEntity<CreditInstitute> patch(@RequestBody CreditInstitute entity) {
-		System.out.println("patching credit institute [" + entity + "]...");
-		return new ResponseEntity<CreditInstitute>(creditInstituteRepository.save(entity), HttpStatus.OK);
+	public ResponseEntity<CreditInstitute> patch(@RequestBody CreditInstitute entity) {		
+		try {
+			CreditInstitute saved = creditInstituteRepository.save(entity);
+			return new ResponseEntity<CreditInstitute>(saved, HttpStatus.OK);			
+		} catch (Exception e) {
+			logger.error("Fehler beim Speichern eines Kredit-Institutes ["+e.getMessage()+"]");
+			return new ResponseEntity<CreditInstitute>(entity, HttpStatus.BAD_REQUEST);
+		}
 	}
 }

@@ -118,6 +118,7 @@ b.booking_date,
 b.purpose_of_use,
 b.custom_remark,
 pc.purpose_key,
+pc_booking.purpose_key as booking_purpose_key,
 a.id AS account_id,
 tp.id AS trading_partner_id,
 tp.trading_key AS trading_partner_key,
@@ -126,5 +127,6 @@ from booking b
 inner join account a on (a.id = b.account_id)
 inner join trading_partner tp on (tp.id = b.trading_partner_id )
 left join purpose_category pc on (pc.id = tp.purpose_category_id)
+left join purpose_category pc_booking on (pc_booking.id = b.purpose_category_id)
 left join booking_import_item bii on (bii.booking_id = b.id)
 left join booking_import bi on (bi.id = bii.booking_import_id)

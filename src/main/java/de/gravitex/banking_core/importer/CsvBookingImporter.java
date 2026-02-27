@@ -19,16 +19,13 @@ public class CsvBookingImporter extends BookingImporter {
 		CsvWrapper wrapper = new CsvWrapper(file);
 		List<Booking> bookings = new ArrayList<>();
 		for (CsvLine aCsvLine : wrapper.getLinesOrdered()) {
-			
 			Booking booking = new Booking();
-			
 			booking.setText(aCsvLine.getValueByKey("Buchungstext"));
 			booking.setPurposeOfUse(aCsvLine.getValueByKey("Verwendungszweck"));		
 			booking.setAmount(getBigDecimal(aCsvLine.getValueByKey("Betrag")));
 			booking.setAmountAfterBooking(getBigDecimal(aCsvLine.getValueByKey("Saldo nach Buchung")));
 			booking.setTradingPartnerKey(aCsvLine.getValueByKey("Name Zahlungsbeteiligter"));
 			booking.setBookingDate(parseLocalDate(aCsvLine.getValueByKey("Buchungstag")));
-			
 			bookings.add(booking);
 		}
 		return bookings;
