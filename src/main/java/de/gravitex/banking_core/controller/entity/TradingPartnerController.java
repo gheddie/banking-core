@@ -3,6 +3,8 @@ package de.gravitex.banking_core.controller.entity;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,8 +38,8 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 	}
 	
 	@RequestMapping(value = "tradingpartners", method = RequestMethod.GET)
-	public List<TradingPartner> findAll() {
-		return tradingPartnerRepository.findAll();
+	public ResponseEntity<List<TradingPartner>> findAll() {
+		return new ResponseEntity<List<TradingPartner>>(tradingPartnerRepository.findAll(), HttpStatus.OK);
 	}
 
 	@PatchMapping(path = "tradingpartner")

@@ -3,6 +3,8 @@ package de.gravitex.banking_core.controller.entity;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,8 +20,8 @@ public class PurposeCategoryController implements PersistableEntityController<Pu
 	private PurposeCategoryRepository purposeCategoryRepository;
 
 	@RequestMapping(value = "purposecategorys", method = RequestMethod.GET)
-	public List<PurposeCategory> findAll() {
-		return purposeCategoryRepository.findAll();
+	public ResponseEntity<List<PurposeCategory>> findAll() {
+		return new ResponseEntity<List<PurposeCategory>>(purposeCategoryRepository.findAll(), HttpStatus.OK);
 	}
 
 	@Override
