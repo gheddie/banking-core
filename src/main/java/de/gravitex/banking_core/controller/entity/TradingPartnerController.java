@@ -43,8 +43,8 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 	}
 
 	@PatchMapping(path = "tradingpartner")
-	public void patch(@RequestBody TradingPartner entity) {
+	public ResponseEntity<TradingPartner> patch(@RequestBody TradingPartner entity) {
 		System.out.println("patching trading partner ["+entity+"]...");
-		tradingPartnerRepository.save(entity);
+		return new ResponseEntity<TradingPartner>(tradingPartnerRepository.save(entity), HttpStatus.OK);
 	}
 }

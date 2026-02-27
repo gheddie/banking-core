@@ -17,7 +17,7 @@ import de.gravitex.banking_core.repository.CreditInstituteRepository;
 
 @RestController
 public class CreditInstituteController implements PersistableEntityController<CreditInstitute> {
-	
+
 	@Autowired
 	private CreditInstituteRepository creditInstituteRepository;
 
@@ -27,8 +27,8 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 	}
 
 	@PatchMapping(path = "creditinstitute")
-	public void patch(@RequestBody CreditInstitute entity) {
-		System.out.println("patching credit institute ["+entity+"]...");
-		creditInstituteRepository.save(entity);
+	public ResponseEntity<CreditInstitute> patch(@RequestBody CreditInstitute entity) {
+		System.out.println("patching credit institute [" + entity + "]...");
+		return new ResponseEntity<CreditInstitute>(creditInstituteRepository.save(entity), HttpStatus.OK);
 	}
 }

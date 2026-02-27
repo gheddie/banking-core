@@ -25,7 +25,8 @@ public class StandingOrderController implements PersistableEntityController<Stan
 	}
 
 	@Override
-	public void patch(StandingOrder entity) {
+	public ResponseEntity<StandingOrder> patch(StandingOrder entity) {
 		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -21,8 +21,8 @@ public class BookingController implements PersistableEntityController<Booking> {
 	private BookingRepository bookingRepository;
 
 	@PatchMapping(path = "booking", consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public void patch(@RequestBody Booking entity) {
-		bookingRepository.save(entity);
+	public ResponseEntity<Booking> patch(@RequestBody Booking entity) {
+		return new ResponseEntity<Booking>(bookingRepository.save(entity), HttpStatus.OK);
 	}
 
 	@Override

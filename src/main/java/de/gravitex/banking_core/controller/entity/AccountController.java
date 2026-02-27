@@ -29,12 +29,13 @@ public class AccountController implements PersistableEntityController<Account> {
 	}
 
 	@Override
-	public void patch(Account entity) {
+	public ResponseEntity<List<Account>> findAll() {
 		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public ResponseEntity<List<Account>> findAll() {
+	public ResponseEntity<Account> patch(Account entity) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -25,7 +25,8 @@ public class PurposeCategoryController implements PersistableEntityController<Pu
 	}
 
 	@Override
-	public void patch(PurposeCategory entity) {
+	public ResponseEntity<PurposeCategory> patch(PurposeCategory entity) {
 		// TODO Auto-generated method stub
+		return null;
 	}
 }
