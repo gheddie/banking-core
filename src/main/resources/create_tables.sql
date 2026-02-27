@@ -12,16 +12,22 @@ GO
 ---------------------------------------------------------------------------------------------------------------
 
 /*
+drop table booking_import_item;
 drop table booking;
+drop table booking_import;
+drop table standing_order;
 drop table account;
 drop table credit_institute;
+drop table trading_partner;
+drop table purpose_category;
 */
 
 CREATE TABLE credit_institute (
     id int,
     bic varchar(32) not null,
     name varchar(255) not null,
-	primary key (id)
+	primary key (id),
+	CONSTRAINT BIC_UNIQUE UNIQUE(bic)
 );
 
 CREATE TABLE account (
@@ -35,14 +41,13 @@ CREATE TABLE account (
 	FOREIGN KEY (credit_institute_id) REFERENCES credit_institute(id)
 );
 
---drop table purpose_category
 CREATE TABLE purpose_category (
     id int,
     purpose_key varchar(255) not null,
-	primary key (id)	
+	primary key (id),
+	CONSTRAINT purpose_key_unique UNIQUE(purpose_key)
 );
 
---drop table trading_partner
 CREATE TABLE trading_partner (
     id int,
     trading_key varchar(255) not null,
@@ -51,7 +56,6 @@ CREATE TABLE trading_partner (
 	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id),	
 );
 
---drop table standing_order
 CREATE TABLE standing_order (
     id int,
     description varchar(255) not null,
@@ -62,10 +66,10 @@ CREATE TABLE standing_order (
 	FOREIGN KEY (account_id) REFERENCES account(id)
 );
 
---drop table booking
 CREATE TABLE booking (
     id int,
     text varchar(255) not null,
+    custom_remark varchar(255) null,
     account_id int not null,
     amount DECIMAL(10, 2) not null,
     amount_after_booking DECIMAL(10, 2) not null,
@@ -79,7 +83,15 @@ CREATE TABLE booking (
 	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id)
 );
 
---drop table booking_import_item
+CREATE TABLE booking_import (
+	id int,
+	file_name varchar(255) not null,
+	import_date datetime2(6) not null,
+	account_id int not null,
+	primary key (id),
+	FOREIGN KEY (account_id) REFERENCES account(id)
+);
+
 CREATE TABLE booking_import_item (
 	id int,
 	booking_id int not null,
@@ -88,16 +100,6 @@ CREATE TABLE booking_import_item (
 	primary key (id),
 	FOREIGN KEY (booking_id) REFERENCES booking(id),
 	FOREIGN KEY (booking_import_id) REFERENCES booking_import(id)
-);
-
---drop table booking_import
-CREATE TABLE booking_import (
-	id int,
-	file_name varchar(255) not null,
-	import_date datetime2(6) not null,
-	account_id int not null,
-	primary key (id),
-	FOREIGN KEY (account_id) REFERENCES account(id)
 );
 
 ---------------------------------------------------------------------------------------------------------------

@@ -16,11 +16,11 @@ import lombok.Data;
 public class Account extends IdEntity {
 	
 	@PresentMe(order = 10)
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String name;
 	
 	@PresentMe(order = 20)	
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String identifier;
 	
 	@Enumerated(EnumType.STRING)

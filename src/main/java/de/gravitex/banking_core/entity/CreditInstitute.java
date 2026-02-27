@@ -11,7 +11,7 @@ import lombok.Data;
 public class CreditInstitute extends IdEntity {
 
 	@PresentMe(order = 0)
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String name;
 	
 	@PresentMe(order = 10)

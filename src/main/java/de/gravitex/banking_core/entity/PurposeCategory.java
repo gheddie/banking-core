@@ -9,7 +9,7 @@ import lombok.Data;
 @Entity
 public class PurposeCategory extends IdEntity {
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String purposeKey;
 	
 	public String toString() {
