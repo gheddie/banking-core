@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.Account;
-import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 
@@ -42,5 +43,24 @@ public class AccountController implements PersistableEntityController<Account> {
 	@PatchMapping(path = "account")
 	public ResponseEntity<Account> patch(@RequestBody Account entity) {
 		return new ResponseEntity<Account>(accountRepository.save(entity), HttpStatus.OK);
+	}
+
+	@Override
+	@DeleteMapping(path = "account")
+	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
+		try {
+			Account account = accountRepository.findById(aEntityId).get();
+			accountRepository.delete(account);
+			return new ResponseEntity<String>("", HttpStatus.OK);			
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);			
+		}
+	}
+
+	@Override
+	@GetMapping(path = "account")
+	public ResponseEntity<Account> findById(@RequestParam("id") Long aEntityId) {
+		Account account = accountRepository.findById(aEntityId).get();
+		return new ResponseEntity<Account>(account, HttpStatus.OK);
 	}
 }

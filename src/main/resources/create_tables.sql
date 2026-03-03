@@ -36,7 +36,6 @@ CREATE TABLE account (
 	identifier varchar(32) not null,
     credit_institute_id int not null,
     import_type varchar(32) not null,
-    latest_booking_date datetime2(6) null,
 	primary key (id),
 	FOREIGN KEY (credit_institute_id) REFERENCES credit_institute(id)
 );

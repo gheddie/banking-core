@@ -38,19 +38,20 @@ public class BookingView extends NoIdEntity {
 	@PresentMe(order = 50)
 	private String purposeKey;
 	
+	@PresentMe(order = 60)
 	private String bookingPurposeKey;
 	
 	private Long accountId;
 	
 	private Long tradingPartnerId;
 	
-	@PresentMe(order = 60)
+	@PresentMe(order = 70)
 	private String tradingPartnerKey;
 	
-	@PresentMe(order = 70)	
+	@PresentMe(order = 80)	
 	private String customRemark;
 	
-	@PresentMe(order = 80)
+	@PresentMe(order = 90)
 	@Column(name = "file_name")
 	private String importFileName;
 	

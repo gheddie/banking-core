@@ -40,3 +40,4 @@ insert into purpose_category (id, purpose_key) values (23,'Technik');
 insert into purpose_category (id, purpose_key) values (24,'Telefonie/Internet');
 insert into purpose_category (id, purpose_key) values (25,'Unterhalt');
 insert into purpose_category (id, purpose_key) values (26,'Versicherung');
+insert into purpose_category (id, purpose_key) values (27,'Urlaub');

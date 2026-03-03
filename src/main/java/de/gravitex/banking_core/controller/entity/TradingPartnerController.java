@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.TradingPartner;
-import de.gravitex.banking_core.repository.PurposeCategoryRepository;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
 
 @RestController
@@ -28,19 +27,6 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 	@Autowired
 	private TradingPartnerRepository tradingPartnerRepository;
 	
-	@Autowired
-	private PurposeCategoryRepository purposeCategoryRepository;
-
-	@PatchMapping(path = "tradingpartners/{id}")
-	public void patchTradingPartnerByPurposeCategoryId(
-			@PathVariable(name = "id", required = true) Long tradingPartnerId,
-			@RequestParam("purposeCategoryId") Long purposeCategoryId) {
-
-		TradingPartner tradingPartner = tradingPartnerRepository.findById(tradingPartnerId).get();
-		tradingPartner.setPurposeCategory(purposeCategoryRepository.findById(purposeCategoryId).get());
-		tradingPartnerRepository.save(tradingPartner);
-	}
-	
 	@RequestMapping(value = "tradingpartners", method = RequestMethod.GET)
 	public ResponseEntity<List<TradingPartner>> findAll() {
 		return new ResponseEntity<List<TradingPartner>>(tradingPartnerRepository.findAll(), HttpStatus.OK);
@@ -50,5 +36,18 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 	public ResponseEntity<TradingPartner> patch(@RequestBody TradingPartner entity) {
 		logger.info("patching trading partner ["+entity+"]...");
 		return new ResponseEntity<TradingPartner>(tradingPartnerRepository.save(entity), HttpStatus.OK);
+	}
+
+	@Override
+	@DeleteMapping(path = "tradingpartner")
+	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResponseEntity<TradingPartner> findById(Long aEntityId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

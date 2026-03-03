@@ -7,10 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
@@ -39,5 +41,22 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 			logger.error("Fehler beim Speichern eines Kredit-Institutes ["+e.getMessage()+"]");
 			return new ResponseEntity<CreditInstitute>(entity, HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	@Override
+	@DeleteMapping(path = "creditinstitute")
+	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
+		try {
+			creditInstituteRepository.delete(creditInstituteRepository.findById(aEntityId).get());
+			return new ResponseEntity<String>("", HttpStatus.OK);			
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);			
+		}
+	}
+
+	@Override
+	public ResponseEntity<CreditInstitute> findById(Long aEntityId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
