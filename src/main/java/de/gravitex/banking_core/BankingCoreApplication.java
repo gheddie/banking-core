@@ -12,7 +12,7 @@ import de.gravitex.banking_core.service.BankingService;
 public class BankingCoreApplication {
 	
 	@Autowired
-	BankingService bookingService;
+	BankingService bankingService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(BankingCoreApplication.class, args);
@@ -20,6 +20,6 @@ public class BankingCoreApplication {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void afterStartup() {	    
-	    bookingService.importBookings();
+	    bankingService.importBookings();
 	}
 }

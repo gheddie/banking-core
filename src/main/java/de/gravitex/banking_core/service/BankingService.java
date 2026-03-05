@@ -1,6 +1,9 @@
 package de.gravitex.banking_core.service;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +24,7 @@ import de.gravitex.banking_core.entity.BookingImport;
 import de.gravitex.banking_core.entity.BookingImportItem;
 import de.gravitex.banking_core.entity.ImportType;
 import de.gravitex.banking_core.entity.TradingPartner;
+import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
 import de.gravitex.banking_core.importer.CsvBookingImporter;
 import de.gravitex.banking_core.importer.base.BookingImporter;
 import de.gravitex.banking_core.repository.AccountRepository;
@@ -238,5 +242,17 @@ public class BankingService {
 
 			return key;
 		}
+	}
+
+	public void checkForImportDirectory(Account account) {
+		String importPath = new ImportDescriptor(account).buildImportPath();
+		if (!isImportDirectoryPresent(importPath)) {
+			throw new ImportDirectoryMandatoryException(importPath);
+		}
+	}
+
+	private boolean isImportDirectoryPresent(String importPath) {
+		boolean exists = Files.exists(Paths.get(importPath));
+		return exists;		
 	}
 }

@@ -20,6 +20,7 @@ import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.exception.ImportTypeMandatoryException;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
+import de.gravitex.banking_core.service.BankingService;
 
 @RestController
 public class AccountController implements PersistableEntityController<Account> {
@@ -29,6 +30,9 @@ public class AccountController implements PersistableEntityController<Account> {
 	
 	@Autowired
 	private AccountRepository accountRepository;
+	
+	@Autowired
+	BankingService bankingService;
 
 	@RequestMapping(value = "accounts/creditInstitute", method = RequestMethod.GET)
 	public List<Account> findByCreditInstitute(@RequestParam("id") Long creditInstituteId) {
@@ -71,6 +75,7 @@ public class AccountController implements PersistableEntityController<Account> {
 	@PutMapping(path = "account")
 	public ResponseEntity<Account> put(@RequestBody Account account) {
 		checkImportType(account);
+		bankingService.checkForImportDirectory(account);
 		accountRepository.save(account);
 		return new ResponseEntity<Account>(account, HttpStatus.OK);
 	}
