@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 public class TradingPartner extends IdEntity {
 
-	@PresentMe(sortMe = true, order = 10)
+	@PresentMe(sortMe = true, order = 10, filterMe = true)
 	@Column(nullable = false)
 	private String tradingKey;
 	

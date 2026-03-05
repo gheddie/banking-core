@@ -44,4 +44,10 @@ public class StandingOrderController implements PersistableEntityController<Stan
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public ResponseEntity<StandingOrder> put(StandingOrder entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

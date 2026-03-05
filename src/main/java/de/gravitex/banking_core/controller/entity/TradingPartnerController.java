@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,5 +50,12 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 	public ResponseEntity<TradingPartner> findById(Long aEntityId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	@PutMapping(path = "tradingpartner")
+	public ResponseEntity<TradingPartner> put(@RequestBody TradingPartner entity) {
+		tradingPartnerRepository.save(entity);
+		return new ResponseEntity<TradingPartner>(entity, HttpStatus.OK);
 	}
 }

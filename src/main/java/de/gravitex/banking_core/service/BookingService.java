@@ -152,12 +152,6 @@ public class BookingService {
 	}
 
 	private ImportDescriptor getImportDescriptor(Account account) {
-
-		/*
-		 * new ImportDescriptor(account).buildImportPath(); return rootDirectory +
-		 * "\\" + account.getCreditInstitute().getBic() + "_" + account.getIdentifier();
-		 */
-
 		return new ImportDescriptor(account);
 	}
 

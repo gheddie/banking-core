@@ -10,15 +10,15 @@ import lombok.Data;
 @Entity
 public class CreditInstitute extends IdEntity {
 
-	@PresentMe(order = 0)
+	@PresentMe(order = 0, filterMe = true)
 	@Column(nullable = false)
 	private String name;
 	
-	@PresentMe(order = 10)
+	@PresentMe(order = 10, filterMe = true)
 	@Column(nullable = false, unique = true)
 	private String bic;
 	
 	public String toString() {
-		return name + " ("+bic+")";		
+		return name + " ("+bic+")";
 	}
 }

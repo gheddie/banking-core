@@ -50,4 +50,10 @@ public class BookingController implements PersistableEntityController<Booking> {
 		Booking booking = bookingRepository.findById(aEntityId).get();
 		return new ResponseEntity<Booking>(booking, HttpStatus.OK);
 	}
+
+	@Override
+	public ResponseEntity<Booking> put(Booking entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -9,4 +9,6 @@ public interface PersistableEntityController<T> extends ViewEntityController<T> 
 	public ResponseEntity<String> delete(Long aEntityId);
 	
 	public ResponseEntity<T> findById(Long aEntityId);
+	
+	public ResponseEntity<T> put(T entity);
 }

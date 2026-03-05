@@ -1,5 +1,6 @@
 package de.gravitex.banking_core.entity;
 
+import de.gravitex.banking_core.entity.annotation.Creatable;
 import de.gravitex.banking_core.entity.annotation.PresentMe;
 import de.gravitex.banking_core.entity.base.IdEntity;
 import jakarta.persistence.Column;
@@ -11,13 +12,14 @@ import lombok.Data;
 
 @Data
 @Entity
+@Creatable
 public class Account extends IdEntity {
 	
-	@PresentMe(order = 10)
+	@PresentMe(order = 10, filterMe = true)
 	@Column(nullable = false)
 	private String name;
 	
-	@PresentMe(order = 20)	
+	@PresentMe(order = 20, filterMe = true)	
 	@Column(nullable = false)
 	private String identifier;
 	

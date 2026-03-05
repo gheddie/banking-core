@@ -23,16 +23,16 @@ public class BookingView extends NoIdEntity {
 	@PresentMe(valueFormatter = DateTimeValueFormatter.class, sortMe = true, order=1)
 	private LocalDate bookingDate;
 	
-	@PresentMe(order = 10)
+	@PresentMe(order = 10, filterMe = true)
 	private String text;
 	
-	@PresentMe(order = 20)
+	@PresentMe(order = 20, filterMe = true)
 	private BigDecimal amount;
 	
 	@PresentMe(order = 30)
 	private BigDecimal amountAfterBooking;
 	
-	@PresentMe(order = 40)
+	@PresentMe(order = 40, filterMe = true)
 	private String purposeOfUse;
 	
 	@PresentMe(order = 50)
@@ -48,7 +48,7 @@ public class BookingView extends NoIdEntity {
 	@PresentMe(order = 70)
 	private String tradingPartnerKey;
 	
-	@PresentMe(order = 80)	
+	@PresentMe(order = 80, filterMe = true)	
 	private String customRemark;
 	
 	@PresentMe(order = 90)

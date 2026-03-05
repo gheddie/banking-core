@@ -63,4 +63,10 @@ public class AccountController implements PersistableEntityController<Account> {
 		Account account = accountRepository.findById(aEntityId).get();
 		return new ResponseEntity<Account>(account, HttpStatus.OK);
 	}
+
+	@Override
+	public ResponseEntity<Account> put(Account entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

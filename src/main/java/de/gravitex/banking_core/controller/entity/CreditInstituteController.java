@@ -59,4 +59,10 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public ResponseEntity<CreditInstitute> put(CreditInstitute entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
