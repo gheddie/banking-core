@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
@@ -29,6 +30,7 @@ public class Account extends IdEntity {
 	
 	@PresentMe(order = 30)
 	@ManyToOne
+	@JoinColumn(nullable = false)
 	private CreditInstitute creditInstitute;
 	
 	public String toString() {
