@@ -1,4 +1,6 @@
-package de.gravitex.banking_core.exception.base;
+package de.gravitex.banking_core.exception;
+
+import de.gravitex.banking_core.exception.base.BankingException;
 
 public class InvalidBicException extends BankingException {
 	

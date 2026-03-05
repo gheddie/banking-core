@@ -33,9 +33,9 @@ import de.gravitex.banking_core.util.StringHelper;
 import jakarta.transaction.Transactional;
 
 @Service
-public class BookingService {
+public class BankingService {
 	
-	private Logger logger = LoggerFactory.getLogger(BookingService.class);
+	private Logger logger = LoggerFactory.getLogger(BankingService.class);
 
 	@Value("${import.rootdir}")
 	private String rootDirectory;

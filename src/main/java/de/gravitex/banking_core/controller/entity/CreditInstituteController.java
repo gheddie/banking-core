@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.CreditInstitute;
-import de.gravitex.banking_core.exception.base.InvalidBicException;
+import de.gravitex.banking_core.exception.InvalidBicException;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 
 @RestController

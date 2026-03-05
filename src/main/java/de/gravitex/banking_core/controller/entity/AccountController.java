@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.Account;
+import de.gravitex.banking_core.exception.ImportTypeMandatoryException;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 
@@ -36,33 +38,46 @@ public class AccountController implements PersistableEntityController<Account> {
 	@Override
 	@RequestMapping(value = "accounts", method = RequestMethod.GET)
 	public ResponseEntity<List<Account>> findAll() {
-		return new ResponseEntity<List<Account>>(accountRepository.findAll(), HttpStatus.OK);
+		List<Account> accounts = accountRepository.findAll();
+		for (Account account : accounts) {
+			checkImportType(account);
+		}
+		return new ResponseEntity<List<Account>>(accounts, HttpStatus.OK);
 	}
 
 	@Override
 	@PatchMapping(path = "account")
-	public ResponseEntity<Account> patch(@RequestBody Account entity) {
-		return new ResponseEntity<Account>(accountRepository.save(entity), HttpStatus.OK);		
+	public ResponseEntity<Account> patch(@RequestBody Account account) {
+		checkImportType(account);
+		return new ResponseEntity<Account>(accountRepository.save(account), HttpStatus.OK);		
 	}
 
 	@Override
 	@DeleteMapping(path = "account")
-	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
-		Account account = accountRepository.findById(aEntityId).get();
+	public ResponseEntity<String> delete(@RequestParam("id") Long accountId) {
+		Account account = accountRepository.findById(accountId).get();
 		accountRepository.delete(account);
 		return new ResponseEntity<String>("", HttpStatus.OK);
 	}
 
 	@Override
 	@GetMapping(path = "account")
-	public ResponseEntity<Account> findById(@RequestParam("id") Long aEntityId) {
-		Account account = accountRepository.findById(aEntityId).get();
+	public ResponseEntity<Account> findById(@RequestParam("id") Long accountId) {
+		Account account = accountRepository.findById(accountId).get();
 		return new ResponseEntity<Account>(account, HttpStatus.OK);
 	}
 
 	@Override
-	public ResponseEntity<Account> put(Account entity) {
-		// TODO Auto-generated method stub
-		return null;
+	@PutMapping(path = "account")
+	public ResponseEntity<Account> put(@RequestBody Account account) {
+		checkImportType(account);
+		accountRepository.save(account);
+		return new ResponseEntity<Account>(account, HttpStatus.OK);
+	}
+
+	private void checkImportType(Account account) {
+		if (account.getImportType() == null) {
+			throw new ImportTypeMandatoryException();
+		}
 	}
 }

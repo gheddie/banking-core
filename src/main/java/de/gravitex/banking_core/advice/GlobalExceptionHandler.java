@@ -6,7 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import de.gravitex.banking_core.exception.base.InvalidBicException;
+import de.gravitex.banking_core.exception.ImportTypeMandatoryException;
+import de.gravitex.banking_core.exception.InvalidBicException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,6 +21,11 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(InvalidBicException.class)
 	public ResponseEntity<String> handleException(InvalidBicException aException) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
+	}
+	
+	@ExceptionHandler(ImportTypeMandatoryException.class)
+	public ResponseEntity<String> handleException(ImportTypeMandatoryException aException) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
 	}
 }

@@ -6,13 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
-import de.gravitex.banking_core.service.BookingService;
+import de.gravitex.banking_core.service.BankingService;
 
 @SpringBootApplication
 public class BankingCoreApplication {
 	
 	@Autowired
-	BookingService bookingService;
+	BankingService bookingService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(BankingCoreApplication.class, args);
