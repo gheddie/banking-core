@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.PurposeCategory;
-import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.repository.PurposeCategoryRepository;
 
 @RestController

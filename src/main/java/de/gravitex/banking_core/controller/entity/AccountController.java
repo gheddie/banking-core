@@ -42,19 +42,15 @@ public class AccountController implements PersistableEntityController<Account> {
 	@Override
 	@PatchMapping(path = "account")
 	public ResponseEntity<Account> patch(@RequestBody Account entity) {
-		return new ResponseEntity<Account>(accountRepository.save(entity), HttpStatus.OK);
+		return new ResponseEntity<Account>(accountRepository.save(entity), HttpStatus.OK);		
 	}
 
 	@Override
 	@DeleteMapping(path = "account")
 	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
-		try {
-			Account account = accountRepository.findById(aEntityId).get();
-			accountRepository.delete(account);
-			return new ResponseEntity<String>("", HttpStatus.OK);			
-		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);			
-		}
+		Account account = accountRepository.findById(aEntityId).get();
+		accountRepository.delete(account);
+		return new ResponseEntity<String>("", HttpStatus.OK);
 	}
 
 	@Override
