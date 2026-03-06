@@ -1,6 +1,7 @@
 package de.gravitex.banking_core.service;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.entity.BookingImport;
@@ -254,5 +256,26 @@ public class BankingService {
 	private boolean isImportDirectoryPresent(String importPath) {
 		boolean exists = Files.exists(Paths.get(importPath));
 		return exists;		
+	}
+
+	public List<AccountInfo> createAccountInfo() {
+		List<AccountInfo> result = new ArrayList<>();
+		for (Account account : accountRepository.findAll()) {
+			AccountInfo info = new AccountInfo();
+			info.setAccount(account);
+			info.setActualAmount(getActualAmount(account));
+			result.add(info);
+		}
+		return result;
+	}
+
+	private BigDecimal getActualAmount(Account account) {
+		
+		LocalDate latestBookingDate = bookingRepository.findLatestBookingDate(account);
+		List<Booking> bookings = bookingRepository.findByAccountAndBookingDateOrderByAmountAfterBookingDesc(account, latestBookingDate);
+		if (bookings == null || bookings.isEmpty()) {
+			return BigDecimal.ZERO;	
+		}
+		return bookings.get(0).getAmountAfterBooking();
 	}
 }

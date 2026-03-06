@@ -1,7 +1,9 @@
 package de.gravitex.banking_core.controller.entity;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
+import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.exception.ImportTypeMandatoryException;
 import de.gravitex.banking_core.repository.AccountRepository;
@@ -34,13 +37,13 @@ public class AccountController implements PersistableEntityController<Account> {
 	@Autowired
 	BankingService bankingService;
 
-	@RequestMapping(value = "accounts/creditInstitute", method = RequestMethod.GET)
+	@GetMapping(value = "accounts/creditInstitute")
 	public List<Account> findByCreditInstitute(@RequestParam("id") Long creditInstituteId) {
 		return accountRepository.findByCreditInstitute(creditInstituteRepository.findById(creditInstituteId).get());
 	}
 
 	@Override
-	@RequestMapping(value = "accounts", method = RequestMethod.GET)
+	@GetMapping(value = "accounts")
 	public ResponseEntity<List<Account>> findAll() {
 		List<Account> accounts = accountRepository.findAll();
 		for (Account account : accounts) {
@@ -78,6 +81,13 @@ public class AccountController implements PersistableEntityController<Account> {
 		bankingService.checkForImportDirectory(account);
 		accountRepository.save(account);
 		return new ResponseEntity<Account>(account, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "accountinfos")
+	public ResponseEntity<List<AccountInfo>> getAccountinfos() {
+		List<AccountInfo> accountInfos = bankingService.createAccountInfo();
+		return new ResponseEntity<List<AccountInfo>>(
+				accountInfos, HttpStatus.OK);
 	}
 
 	private void checkImportType(Account account) {

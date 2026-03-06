@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +30,7 @@ public class BookingController implements PersistableEntityController<Booking> {
 	}
 
 	@Override
-	@RequestMapping(value = "bookings", method = RequestMethod.GET)
+	@GetMapping(value = "bookings")
 	public ResponseEntity<List<Booking>> findAll() {
 		return new ResponseEntity<List<Booking>>(bookingRepository.findAll(), HttpStatus.OK);
 	}

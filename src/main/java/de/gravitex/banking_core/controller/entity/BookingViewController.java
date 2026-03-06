@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,12 +18,12 @@ public class BookingViewController implements ViewEntityController<BookingView> 
 	@Autowired
 	private BookingViewRepository bookingViewRepository;
 
-	@RequestMapping(value = "bookingviews/account", method = RequestMethod.GET)
+	@GetMapping(value = "bookingviews/account")
 	public List<BookingView> findByAccount(@RequestParam("id") Long accountId) {
 		return bookingViewRepository.findByAccountId(accountId);
 	}
 	
-	@RequestMapping(value = "bookingviews/tradingpartner", method = RequestMethod.GET)
+	@GetMapping(value = "bookingviews/tradingpartner")
 	public List<BookingView> findByTradingPartner(@RequestParam("id") Long tradingPartnerId) {
 		return bookingViewRepository.findByTradingPartnerId(tradingPartnerId);
 	}

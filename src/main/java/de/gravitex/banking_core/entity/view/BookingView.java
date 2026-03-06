@@ -21,18 +21,23 @@ public class BookingView extends NoIdEntity {
 	private Long id;
 	
 	@PresentMe(valueFormatter = DateTimeValueFormatter.class, sortMe = true, order=1)
+	@Column(nullable = false)
 	private LocalDate bookingDate;
 	
 	@PresentMe(order = 10, filterMe = true)
+	@Column(nullable = false)
 	private String text;
 	
 	@PresentMe(order = 20, filterMe = true)
+	@Column(nullable = false)
 	private BigDecimal amount;
 	
 	@PresentMe(order = 30)
+	@Column(nullable = false)
 	private BigDecimal amountAfterBooking;
 	
 	@PresentMe(order = 40, filterMe = true)
+	@Column(nullable = false)
 	private String purposeOfUse;
 	
 	@PresentMe(order = 50)
@@ -41,11 +46,14 @@ public class BookingView extends NoIdEntity {
 	@PresentMe(order = 60)
 	private String bookingPurposeKey;
 	
+	@Column(nullable = false)
 	private Long accountId;
 	
+	@Column(nullable = false)
 	private Long tradingPartnerId;
 	
 	@PresentMe(order = 70)
+	@Column(nullable = false)
 	private String tradingPartnerKey;
 	
 	@PresentMe(order = 80, filterMe = true)	

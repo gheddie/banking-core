@@ -23,7 +23,7 @@ drop table purpose_category;
 */
 
 CREATE TABLE credit_institute (
-    id int,
+    id BIGINT,
     bic varchar(32) not null,
     name varchar(255) not null,
 	primary key (id),
@@ -31,51 +31,51 @@ CREATE TABLE credit_institute (
 );
 
 CREATE TABLE account (
-    id int,
+    id BIGINT,
     name varchar(255) not null,
 	identifier varchar(32) not null,
-    credit_institute_id int not null,
+    credit_institute_id BIGINT not null,
     import_type varchar(32) not null,
 	primary key (id),
 	FOREIGN KEY (credit_institute_id) REFERENCES credit_institute(id)
 );
 
 CREATE TABLE purpose_category (
-    id int,
+    id BIGINT,
     purpose_key varchar(255) not null,
 	primary key (id),
 	CONSTRAINT purpose_key_unique UNIQUE(purpose_key)
 );
 
 CREATE TABLE trading_partner (
-    id int,
+    id BIGINT,
     trading_key varchar(255) not null,
-    purpose_category_id int null,
+    purpose_category_id BIGINT null,
 	primary key (id),
 	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id),	
 );
 
 CREATE TABLE standing_order (
-    id int,
+    id bigint,
     description varchar(255) not null,
-    trading_partner_id int null,
-    account_id int not null,
+    trading_partner_id bigint null,
+    account_id bigint not null,
 	primary key (id),
 	FOREIGN KEY (trading_partner_id) REFERENCES trading_partner(id),	
 	FOREIGN KEY (account_id) REFERENCES account(id)
 );
 
 CREATE TABLE booking (
-    id int,
+    id BIGINT,
     text varchar(255) not null,
     custom_remark varchar(255) null,
-    account_id int not null,
+    account_id BIGINT not null,
     amount DECIMAL(10, 2) not null,
     amount_after_booking DECIMAL(10, 2) not null,
-    booking_date datetime2(6) not null,
+    booking_date DATE not null,
     purpose_of_use varchar(1024) not null,
-    trading_partner_id int not null,
-    purpose_category_id int null,
+    trading_partner_id BIGINT not null,
+    purpose_category_id BIGINT null,
 	primary key (id),
 	FOREIGN KEY (account_id) REFERENCES account(id),
 	FOREIGN KEY (trading_partner_id) REFERENCES trading_partner(id),
@@ -83,18 +83,18 @@ CREATE TABLE booking (
 );
 
 CREATE TABLE booking_import (
-	id int,
+	id bigint,
 	file_name varchar(255) not null,
-	import_date datetime2(6) not null,
-	account_id int not null,
+	import_date DATE not null,
+	account_id bigint not null,
 	primary key (id),
 	FOREIGN KEY (account_id) REFERENCES account(id)
 );
 
 CREATE TABLE booking_import_item (
-	id int,
-	booking_id int not null,
-	booking_import_id int not null,
+	id bigint,
+	booking_id bigint not null,
+	booking_import_id bigint not null,
 	item_pos int not null,
 	primary key (id),
 	FOREIGN KEY (booking_id) REFERENCES booking(id),

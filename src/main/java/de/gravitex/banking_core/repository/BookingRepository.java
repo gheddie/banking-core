@@ -1,6 +1,6 @@
 package de.gravitex.banking_core.repository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +14,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	List<Booking> findByAccount(Account account);
 	
 	@Query("select max(b.bookingDate) from Booking b where account = :account")
-	Date findMaxBookingDate(Account account);
+	LocalDate findLatestBookingDate(Account account);
+
+	List<Booking> findByAccountAndBookingDateOrderByAmountAfterBookingDesc(Account account, LocalDate aookingDate);
 }
