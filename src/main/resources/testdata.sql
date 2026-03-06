@@ -7,7 +7,7 @@ delete from credit_institute;
 insert into credit_institute (id, name, bic) values (1, 'Volksbank Wendeburg', 'GENODEF1WBU');
 
 --select * from account
-insert into account (id, name, credit_institute_id, identifier, import_type) values (1, 'Giro-Konto', 1, 'GIROVOBA', 'CSV');
+insert into account (id, name, credit_institute_id, identifier, import_type) values (1, 'Giro-Konto', 1, 'GIRO_PRIVAT', 'CSV');
 insert into account (id, name, credit_institute_id, identifier, import_type) values (2, 'Teilhabe', 1, 'THVOBA', 'CSV');
 
 ------------------------------------------------------------------------------------------

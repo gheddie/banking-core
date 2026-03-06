@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
 import de.gravitex.banking_core.exception.ImportTypeMandatoryException;
 import de.gravitex.banking_core.exception.InvalidBicException;
+import de.gravitex.banking_core.exception.OptionalNotPresentException;
+import de.gravitex.banking_core.exception.ReferingEntitiesException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -32,6 +34,16 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(ImportDirectoryMandatoryException.class)
 	public ResponseEntity<String> handleException(ImportDirectoryMandatoryException aException) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
+	}
+	
+	@ExceptionHandler(ReferingEntitiesException.class)
+	public ResponseEntity<String> handleException(ReferingEntitiesException aException) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
+	}
+	
+	@ExceptionHandler(OptionalNotPresentException.class)
+	public ResponseEntity<String> handleException(OptionalNotPresentException aException) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
 	}
 }

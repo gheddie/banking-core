@@ -1,0 +1,34 @@
+package de.gravitex.banking_core.service;
+
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import de.gravitex.banking_core.entity.base.IdEntity;
+import de.gravitex.banking_core.exception.OptionalNotPresentException;
+import de.gravitex.banking_core.repository.util.PotentiallyReferingEntity;
+import de.gravitex.banking_core.repository.util.PotientallyReferenced;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+@Service
+public class DataIntegrityService {
+
+	@PersistenceContext
+	private EntityManager entityManager;
+
+	@SuppressWarnings("unchecked")
+	public void testAndFailReferringEntities(PotientallyReferenced aPotientallyReferenced) {
+		for (PotentiallyReferingEntity aReferringEntity : aPotientallyReferenced.getPotentiallyReferringEntites()) {
+			aReferringEntity.acceptReferringEntities(entityManager.createQuery(aReferringEntity.buildQueryString())
+					.setParameter("param", aPotientallyReferenced.getEntity()).getResultList());
+		}
+		aPotientallyReferenced.tryAndFail();
+	}
+
+	public void assertOptionalPresent(Optional<? extends IdEntity> aOptional) {
+		if (!aOptional.isPresent()) {
+			throw new OptionalNotPresentException(aOptional);
+		}
+	}
+}

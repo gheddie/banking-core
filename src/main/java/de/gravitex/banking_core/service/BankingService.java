@@ -3,7 +3,6 @@ package de.gravitex.banking_core.service;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -69,26 +68,32 @@ public class BankingService {
 	public void importBookings() {
 		logger.info("importing all bookings [" + rootDirectory + "]...");
 		for (Account account : accountRepository.findAll()) {
-			ImportDescriptor importDescriptor = getImportDescriptor(account);
-			String importPath = importDescriptor.buildImportPath();
-			logger.info("importing bookings for account [" + account + "] --> Pfad: " + importPath + " ["
-					+ account.getImportType() + "]");
-			processFiles(importPath, account, importDescriptor);
+			importBookingsForAccount(account);
 		}
 	}
 
+	public List<Booking> importBookingsForAccount(Account account) {
+		ImportDescriptor importDescriptor = getImportDescriptor(account);
+		String importPath = importDescriptor.buildImportPath();
+		logger.info("importing bookings for account [" + account + "] --> Pfad: " + importPath + " ["
+				+ account.getImportType() + "]");
+		return processFiles(importPath, account, importDescriptor);
+	}
+
 	@Transactional
-	private void processFiles(String directoryPath, Account account, ImportDescriptor importDescriptor) {
+	private List<Booking> processFiles(String directoryPath, Account account, ImportDescriptor importDescriptor) {
+		List<Booking> result = new ArrayList<>();
 		File directory = new File(directoryPath);
 		File[] listedFiles = directory.listFiles();
 		if (listedFiles != null && listedFiles.length > 0) {
 			for (File file : listedFiles) {
-				processFile(account, file, importDescriptor);
+				result.addAll(processFile(account, file, importDescriptor));
 			}
-		}
+		}		
+		return result;
 	}
 
-	private void processFile(Account account, File file, ImportDescriptor importDescriptor) {
+	private List<Booking> processFile(Account account, File file, ImportDescriptor importDescriptor) {
 		List<Booking> bookings = getImporter(account.getImportType()).generateBookings(file);
 		if (bookings != null && !bookings.isEmpty()) {
 			List<Booking> newBookings = new ArrayList<>();
@@ -102,7 +107,10 @@ public class BankingService {
 				logger.info("Keine neuen Umsätze in Datei[" + file.getName() + "] --> kein Import erstellt!!!");
 			}
 			createImport(file, account, persistedBookings);
-		}
+			return persistedBookings;
+		} else {
+			return new ArrayList<>();
+		}		
 	}
 
 	private BookingImport createImport(File aImportFile, Account account, List<Booking> aBookings) {

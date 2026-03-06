@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.Booking;
+import de.gravitex.banking_core.entity.PurposeCategory;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
@@ -17,4 +18,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	LocalDate findLatestBookingDate(Account account);
 
 	List<Booking> findByAccountAndBookingDateOrderByAmountAfterBookingDesc(Account account, LocalDate aookingDate);
+
+	List<Booking> findByPurposeCategory(PurposeCategory aPurposeCategory);
 }

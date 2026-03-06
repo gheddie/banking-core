@@ -1,9 +1,8 @@
 package de.gravitex.banking_core.controller.entity;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +21,7 @@ import de.gravitex.banking_core.exception.ImportTypeMandatoryException;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 import de.gravitex.banking_core.service.BankingService;
+import de.gravitex.banking_core.service.DataIntegrityService;
 
 @RestController
 public class AccountController implements PersistableEntityController<Account> {
@@ -36,6 +34,9 @@ public class AccountController implements PersistableEntityController<Account> {
 	
 	@Autowired
 	BankingService bankingService;
+
+	@Autowired
+	private DataIntegrityService integrityService;
 
 	@GetMapping(value = "accounts/creditInstitute")
 	public List<Account> findByCreditInstitute(@RequestParam("id") Long creditInstituteId) {
@@ -62,8 +63,9 @@ public class AccountController implements PersistableEntityController<Account> {
 	@Override
 	@DeleteMapping(path = "account")
 	public ResponseEntity<String> delete(@RequestParam("id") Long accountId) {
-		Account account = accountRepository.findById(accountId).get();
-		accountRepository.delete(account);
+		Optional<Account> accountOptional = accountRepository.findById(accountId);		
+		integrityService.assertOptionalPresent(accountOptional);
+		accountRepository.delete(accountOptional.get());
 		return new ResponseEntity<String>("", HttpStatus.OK);
 	}
 

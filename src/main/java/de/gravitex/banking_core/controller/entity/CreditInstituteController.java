@@ -1,6 +1,7 @@
 package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -17,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
+import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.CreditInstitute;
 import de.gravitex.banking_core.exception.InvalidBicException;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
+import de.gravitex.banking_core.repository.util.PotientallyReferenced;
+import de.gravitex.banking_core.service.DataIntegrityService;
 
 @RestController
 public class CreditInstituteController implements PersistableEntityController<CreditInstitute> {
@@ -27,6 +31,9 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 	private Logger logger = LoggerFactory.getLogger(CreditInstituteController.class);
 	
 	Pattern BIC_PATTERN = Pattern.compile("[A-Z]{6}[A-Z0-9]{2,5}");
+	
+	@Autowired
+	DataIntegrityService integrityService;
 
 	@Autowired
 	private CreditInstituteRepository creditInstituteRepository;
@@ -50,7 +57,13 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 	@Override
 	@DeleteMapping(path = "creditinstitute")
 	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
-		creditInstituteRepository.delete(creditInstituteRepository.findById(aEntityId).get());
+		Optional<CreditInstitute> creditInstituteOptional = creditInstituteRepository.findById(aEntityId);
+		integrityService.assertOptionalPresent(creditInstituteOptional);
+		CreditInstitute aCreditInstitute = creditInstituteOptional.get();
+		integrityService.testAndFailReferringEntities(
+				PotientallyReferenced.forEntity(aCreditInstitute)
+						.withPotentiallyReferringEntity(Account.class, "creditInstitute"));				
+		creditInstituteRepository.delete(aCreditInstitute);
 		return new ResponseEntity<String>("", HttpStatus.OK);
 	}
 
