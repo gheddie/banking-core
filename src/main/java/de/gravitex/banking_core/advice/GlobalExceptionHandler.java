@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
 import de.gravitex.banking_core.exception.ImportTypeMandatoryException;
 import de.gravitex.banking_core.exception.InvalidBicException;
@@ -17,6 +18,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(DataAccessException.class)
 	public ResponseEntity<String> handleException(DataAccessException aException) {
+		aException.printStackTrace();
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("DataAccessException occured...");
 	}
 	
@@ -44,6 +46,11 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(OptionalNotPresentException.class)
 	public ResponseEntity<String> handleException(OptionalNotPresentException aException) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
+	}
+	
+	@ExceptionHandler(BudgetPlanningException.class)
+	public ResponseEntity<String> handleException(BudgetPlanningException aException) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
 	}
 }
