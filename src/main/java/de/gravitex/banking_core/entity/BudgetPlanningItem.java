@@ -2,6 +2,8 @@ package de.gravitex.banking_core.entity;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.gravitex.banking_core.entity.base.IdEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +19,7 @@ import lombok.Data;
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "budget_planning_id", "purpose_category_id" }) })
 public class BudgetPlanningItem extends IdEntity {
 
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(nullable = false)
 	private BudgetPlanning budgetPlanning;

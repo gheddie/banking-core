@@ -105,7 +105,7 @@ CREATE TABLE budget_planning (
     id BIGINT,
     month int not null,
     year int not null,
-	primary key (id),
+	primary key (id)
 );
 
 CREATE TABLE budget_planning_item (

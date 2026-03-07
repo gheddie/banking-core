@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import de.gravitex.banking_core.dto.AccountInfo;
+import de.gravitex.banking_core.dto.BookingFileImportDto;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.entity.BookingImport;
@@ -72,7 +73,7 @@ public class BankingService {
 		}
 	}
 
-	public List<Booking> importBookingsForAccount(Account account) {
+	public List<BookingFileImportDto> importBookingsForAccount(Account account) {
 		ImportDescriptor importDescriptor = getImportDescriptor(account);
 		String importPath = importDescriptor.buildImportPath();
 		logger.info("importing bookings for account [" + account + "] --> Pfad: " + importPath + " ["
@@ -81,20 +82,26 @@ public class BankingService {
 	}
 
 	@Transactional
-	private List<Booking> processFiles(String directoryPath, Account account, ImportDescriptor importDescriptor) {
-		List<Booking> result = new ArrayList<>();
+	private List<BookingFileImportDto> processFiles(String directoryPath, Account account, ImportDescriptor importDescriptor) {
+		List<BookingFileImportDto> result = new ArrayList<>();
 		File directory = new File(directoryPath);
 		File[] listedFiles = directory.listFiles();
 		if (listedFiles != null && listedFiles.length > 0) {
 			for (File file : listedFiles) {
-				result.addAll(processFile(account, file, importDescriptor));
+				List<Booking> fileResult = processFile(account, file, importDescriptor);
+				if (fileResult != null && !fileResult.isEmpty()) {
+					BookingFileImportDto dto = new BookingFileImportDto();
+					dto.setImportedBookings(fileResult);
+					dto.setFileName(file.getName());
+					result.add(dto);
+				}
 			}
 		}		
 		return result;
 	}
 
 	private List<Booking> processFile(Account account, File file, ImportDescriptor importDescriptor) {
-		List<Booking> bookings = getImporter(account.getImportType()).generateBookings(file);
+		List<Booking> bookings = getImporter(account.getImportType()).generateBookings(file, account);
 		if (bookings != null && !bookings.isEmpty()) {
 			List<Booking> newBookings = new ArrayList<>();
 			for (Booking booking : bookings) {

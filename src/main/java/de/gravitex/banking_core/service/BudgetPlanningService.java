@@ -8,8 +8,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.gravitex.banking_core.dto.base.BudgetPlanningDto;
-import de.gravitex.banking_core.dto.base.BudgetPlanningItemDto;
+import de.gravitex.banking_core.dto.BudgetPlanningDto;
+import de.gravitex.banking_core.dto.BudgetPlanningItemDto;
 import de.gravitex.banking_core.entity.BudgetPlanning;
 import de.gravitex.banking_core.entity.BudgetPlanningItem;
 import de.gravitex.banking_core.entity.PurposeCategory;

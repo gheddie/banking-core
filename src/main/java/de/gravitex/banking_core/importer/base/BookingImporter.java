@@ -11,13 +11,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.Booking;
 
 public abstract class BookingImporter {
 	
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-	public abstract List<Booking> generateBookings(File file);
+	public abstract List<Booking> generateBookings(File file, Account account);
 	
 	protected List<String> readImportLines(File file) {
 		List<String> lines = new ArrayList<>();

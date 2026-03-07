@@ -100,6 +100,32 @@ CREATE TABLE booking_import_item (
 	FOREIGN KEY (booking_import_id) REFERENCES booking_import(id)
 );
 
+CREATE TABLE budget_planning (
+    id BIGINT,
+    month int not null,
+    year int not null,
+	primary key (id)
+);
+
+CREATE TABLE budget_planning_item (
+    id BIGINT,
+	amount DECIMAL(10, 2) not null,
+	budget_planning_id BIGINT not null,
+	purpose_category_id BIGINT not null,
+	primary key (id),
+	FOREIGN KEY (budget_planning_id) REFERENCES budget_planning(id)
+);
+
+---------------------------------------------------------------------------------------------------------------
+--- Unique Constraints
+---------------------------------------------------------------------------------------------------------------
+
+--budget_planning
+ALTER TABLE budget_planning ADD CONSTRAINT uc_month_year UNIQUE (month, year);
+
+--budget_planning_item
+ALTER TABLE budget_planning_item ADD CONSTRAINT uc_budgetplanning_purposecategory UNIQUE (budget_planning_id, purpose_category_id); 
+
 ---------------------------------------------------------------------------------------------------------------
 --- Views
 ---------------------------------------------------------------------------------------------------------------

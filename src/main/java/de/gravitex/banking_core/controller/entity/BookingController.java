@@ -1,7 +1,6 @@
 package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,33 +9,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
-import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.Booking;
-import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.BookingRepository;
 import de.gravitex.banking_core.service.BankingService;
-import de.gravitex.banking_core.service.DataIntegrityService;
 
 @RestController
 public class BookingController implements PersistableEntityController<Booking> {
-	
-	@Autowired
-	private AccountRepository accountRepository;
 	
 	@Autowired
 	private BookingRepository bookingRepository;
 	
 	@Autowired
 	BankingService bankingService;
-	
-	@Autowired
-	private DataIntegrityService integrityService;
 
 	@PatchMapping(path = "booking", consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Booking> patch(@RequestBody Booking entity) {
@@ -70,6 +59,7 @@ public class BookingController implements PersistableEntityController<Booking> {
 		return null;
 	}
 	
+	/*
 	@PostMapping(path = "booking/import")
 	public ResponseEntity<List<Booking>> importBookings(@RequestParam("id") Long accountId) {
 		Optional<Account> accountOptional = accountRepository.findById(accountId);
@@ -77,4 +67,5 @@ public class BookingController implements PersistableEntityController<Booking> {
 		return new ResponseEntity<List<Booking>>(bankingService.importBookingsForAccount(accountOptional.get()),
 				HttpStatus.OK);
 	}
+	*/
 }
