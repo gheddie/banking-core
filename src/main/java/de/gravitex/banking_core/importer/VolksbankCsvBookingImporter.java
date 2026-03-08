@@ -1,5 +1,7 @@
 package de.gravitex.banking_core.importer;
 
+import java.time.format.DateTimeFormatter;
+
 public class VolksbankCsvBookingImporter extends CsvBookingImporter {
 
 	@Override
@@ -35,5 +37,15 @@ public class VolksbankCsvBookingImporter extends CsvBookingImporter {
 	@Override
 	protected boolean amountAfterBookingPresent() {
 		return true;
+	}
+	
+	@Override
+	protected boolean isDataQuoted() {
+		return true;
+	}
+	
+	@Override
+	protected DateTimeFormatter initDateFormatter() {
+		return DateTimeFormatter.ofPattern("dd.MM.yyyy");
 	}
 }

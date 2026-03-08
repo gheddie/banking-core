@@ -39,7 +39,6 @@ public class Booking extends IdEntity {
 	private PurposeCategory purposeCategory;
 	
 	@PresentMe(order = 50)
-	@Column(nullable = false)
 	private BigDecimal amountAfterBooking;
 	
 	@ManyToOne

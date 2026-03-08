@@ -1,5 +1,7 @@
 package de.gravitex.banking_core.importer;
 
+import java.time.format.DateTimeFormatter;
+
 public class KreisSparKasseCsvBookingImporter extends CsvBookingImporter {
 
 	@Override
@@ -9,7 +11,7 @@ public class KreisSparKasseCsvBookingImporter extends CsvBookingImporter {
 
 	@Override
 	protected String partnerNameDescriptor() {
-		return "Name Zahlungsbeteiligter";
+		return "Beguenstigter/Zahlungspflichtiger";
 	}
 
 	@Override
@@ -35,5 +37,15 @@ public class KreisSparKasseCsvBookingImporter extends CsvBookingImporter {
 	@Override
 	protected boolean amountAfterBookingPresent() {
 		return false;
+	}
+
+	@Override
+	protected boolean isDataQuoted() {
+		return true;
+	}
+
+	@Override
+	protected DateTimeFormatter initDateFormatter() {
+		return DateTimeFormatter.ofPattern("dd.MM.yy");
 	}
 }

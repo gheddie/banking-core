@@ -1,6 +1,7 @@
 package de.gravitex.banking_core.importer;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,10 +13,12 @@ import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.exception.BookingImportException;
 import de.gravitex.banking_core.importer.base.BookingImporter;
 import de.gravitex.banking_core.importer.exception.csv.CsvProcessingMissingAttributeException;
+import de.gravitex.banking_core.util.StringHelper;
 
 public abstract class CsvBookingImporter extends BookingImporter {
 
 	private static final String DELIMITER = ";";
+	private DateTimeFormatter dateFormatter;
 
 	@Override
 	public List<Booking> generateBookings(File file, Account account) {
@@ -24,14 +27,16 @@ public abstract class CsvBookingImporter extends BookingImporter {
 			List<Booking> bookings = new ArrayList<>();
 			for (CsvLine aCsvLine : wrapper.getLinesOrdered()) {
 				Booking booking = new Booking();
-				booking.setText(aCsvLine.getValueByKey(bookingTextDescriptor()));
-				booking.setPurposeOfUse(aCsvLine.getValueByKey(purposeOfUseDescriptor()));
+				
+				booking.setText(StringHelper.limitLength(aCsvLine.getValueByKey(bookingTextDescriptor()), 255));
+				booking.setPurposeOfUse(StringHelper.limitLength(aCsvLine.getValueByKey(purposeOfUseDescriptor()), 1024));
 				booking.setAmount(getBigDecimal(aCsvLine.getValueByKey(amountDescriptor())));
 				if (amountAfterBookingPresent()) {
 					booking.setAmountAfterBooking(getBigDecimal(aCsvLine.getValueByKey(amountPostBookingDescriptor())));	
 				}
 				booking.setTradingPartnerKey(aCsvLine.getValueByKey(partnerNameDescriptor()));
-				booking.setBookingDate(parseLocalDate(aCsvLine.getValueByKey(bookingDayDescriptor())));
+				booking.setBookingDate(parseLocalDate(aCsvLine.getValueByKey(bookingDayDescriptor()), getOrCreateDateTimeFormatter()));
+				
 				bookings.add(booking);
 			}
 			return bookings;
@@ -40,6 +45,16 @@ public abstract class CsvBookingImporter extends BookingImporter {
 					+ file.getAbsolutePath() + "} for account {"+account.getName()+"}!!!");
 		}
 	}
+
+	private DateTimeFormatter getOrCreateDateTimeFormatter() {
+		if (dateFormatter == null)
+		{
+			dateFormatter = initDateFormatter();
+		}
+		return dateFormatter;
+	}
+
+	protected abstract DateTimeFormatter initDateFormatter();
 
 	protected abstract boolean amountAfterBookingPresent();
 
@@ -99,7 +114,12 @@ public abstract class CsvBookingImporter extends BookingImporter {
 		}
 
 		private void determineHeaders() {
-			headers = lines.get(0).split(DELIMITER);
+			String[] tmp = lines.get(0).split(DELIMITER);
+			List<String> tmpHeaders = new ArrayList<>();
+			for (String aHeader : tmp) {
+				tmpHeaders.add(StringHelper.debracket(aHeader));
+			}
+			headers = tmpHeaders.toArray(new String[tmpHeaders.size()]);
 		}
 	}
 
@@ -119,7 +139,13 @@ public abstract class CsvBookingImporter extends BookingImporter {
 			if (!mappedValues.containsKey(aKey)) {
 				throw new CsvProcessingMissingAttributeException(aKey);
 			}
-			return mappedValues.get(aKey);
+			String result = StringHelper.debracket(mappedValues.get(aKey));
+			/*
+			if (result.length() >= 1024) {
+				int werner = 5;
+			}
+			*/
+			return result;
 		}
 
 		@Override
@@ -127,4 +153,6 @@ public abstract class CsvBookingImporter extends BookingImporter {
 			return "[" + lineIndex + "] --> " + mappedValues;
 		}
 	}
+	
+	protected abstract boolean isDataQuoted();
 }

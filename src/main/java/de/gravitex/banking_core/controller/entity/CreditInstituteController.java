@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.CreditInstitute;
+import de.gravitex.banking_core.exception.ImportTypeMandatoryException;
 import de.gravitex.banking_core.exception.InvalidBicException;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 import de.gravitex.banking_core.repository.util.PotientallyReferenced;
@@ -43,14 +44,16 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 		List<CreditInstitute> creditInstitutes = creditInstituteRepository.findAll();
 		for (CreditInstitute aCreditInstitute : creditInstitutes) {
 			checkBic(aCreditInstitute);
+			checkImportType(aCreditInstitute);
 		}
 		return new ResponseEntity<List<CreditInstitute>>(creditInstitutes, HttpStatus.OK);
 	}
 
 	@PatchMapping(path = "creditinstitute")
-	public ResponseEntity<CreditInstitute> patch(@RequestBody CreditInstitute entity) {
-		checkBic(entity);
-		CreditInstitute saved = creditInstituteRepository.save(entity);
+	public ResponseEntity<CreditInstitute> patch(@RequestBody CreditInstitute aCreditInstitute) {
+		checkBic(aCreditInstitute);
+		checkImportType(aCreditInstitute);
+		CreditInstitute saved = creditInstituteRepository.save(aCreditInstitute);
 		return new ResponseEntity<CreditInstitute>(saved, HttpStatus.OK);
 	}
 
@@ -75,16 +78,23 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 
 	@Override
 	@PutMapping(path = "creditinstitute")
-	public ResponseEntity<CreditInstitute> put(@RequestBody CreditInstitute entity) {
-		checkBic(entity);
-		creditInstituteRepository.save(entity);
-		return new ResponseEntity<CreditInstitute>(entity, HttpStatus.OK);
+	public ResponseEntity<CreditInstitute> put(@RequestBody CreditInstitute aCreditInstitute) {
+		checkImportType(aCreditInstitute);
+		checkBic(aCreditInstitute);
+		creditInstituteRepository.save(aCreditInstitute);
+		return new ResponseEntity<CreditInstitute>(aCreditInstitute, HttpStatus.OK);
 	}
 
 	private void checkBic(CreditInstitute aCreditInstitute) {
 		String bic = aCreditInstitute.getBic();
 		if (!BIC_PATTERN.matcher(bic).matches()) {
 			throw new InvalidBicException("Invalid BIC detected --> " + bic);
+		}
+	}
+	
+	private void checkImportType(CreditInstitute aCreditInstitute) {
+		if (aCreditInstitute.getImportType() == null) {
+			throw new ImportTypeMandatoryException();
 		}
 	}
 }

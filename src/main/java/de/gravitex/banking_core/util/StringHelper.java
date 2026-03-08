@@ -44,4 +44,14 @@ public class StringHelper {
 		}
 		return aValue;
 	}
+
+	public static String limitLength(String aValue, int aMaxLength) {
+		if (aValue == null) {
+			return "";
+		}
+		if (aValue.length() > aMaxLength) {
+			return aValue.substring(0, aMaxLength);
+		}
+		return aValue;
+	}
 }

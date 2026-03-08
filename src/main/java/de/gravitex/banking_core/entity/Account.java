@@ -5,8 +5,6 @@ import de.gravitex.banking_core.entity.annotation.PresentMe;
 import de.gravitex.banking_core.entity.base.IdEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
@@ -23,10 +21,6 @@ public class Account extends IdEntity {
 	@PresentMe(order = 20, filterMe = true)	
 	@Column(nullable = false)
 	private String identifier;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private ImportType importType;
 	
 	@PresentMe(order = 30)
 	@ManyToOne

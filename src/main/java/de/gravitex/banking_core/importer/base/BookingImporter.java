@@ -42,8 +42,8 @@ public abstract class BookingImporter {
 		return new BigDecimal(aValue);
 	}
 	
-	protected LocalDate parseLocalDate(String aDateString) {
-		LocalDate date = LocalDate.parse(aDateString, formatter);
+	protected LocalDate parseLocalDate(String aDateString, DateTimeFormatter aFormatter) {
+		LocalDate date = LocalDate.parse(aDateString, aFormatter);
 		return date;
 	}
 }

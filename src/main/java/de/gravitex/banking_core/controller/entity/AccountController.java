@@ -47,16 +47,12 @@ public class AccountController implements PersistableEntityController<Account> {
 	@GetMapping(value = "accounts")
 	public ResponseEntity<List<Account>> findAll() {
 		List<Account> accounts = accountRepository.findAll();
-		for (Account account : accounts) {
-			checkImportType(account);
-		}
 		return new ResponseEntity<List<Account>>(accounts, HttpStatus.OK);
 	}
 
 	@Override
 	@PatchMapping(path = "account")
 	public ResponseEntity<Account> patch(@RequestBody Account account) {
-		checkImportType(account);
 		return new ResponseEntity<Account>(accountRepository.save(account), HttpStatus.OK);		
 	}
 
@@ -79,7 +75,6 @@ public class AccountController implements PersistableEntityController<Account> {
 	@Override
 	@PutMapping(path = "account")
 	public ResponseEntity<Account> put(@RequestBody Account account) {
-		checkImportType(account);
 		bankingService.checkForImportDirectory(account);
 		accountRepository.save(account);
 		return new ResponseEntity<Account>(account, HttpStatus.OK);
@@ -90,11 +85,5 @@ public class AccountController implements PersistableEntityController<Account> {
 		List<AccountInfo> accountInfos = bankingService.createAccountInfo();
 		return new ResponseEntity<List<AccountInfo>>(
 				accountInfos, HttpStatus.OK);
-	}
-
-	private void checkImportType(Account account) {
-		if (account.getImportType() == null) {
-			throw new ImportTypeMandatoryException();
-		}
 	}
 }

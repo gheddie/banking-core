@@ -74,8 +74,8 @@ public class BankingService {
 
 	private static final Map<ImportType, BookingImporter> IMPORTERS = new HashMap<>();
 	static {
-		IMPORTERS.put(ImportType.CSV, new VolksbankCsvBookingImporter());
-		IMPORTERS.put(ImportType.CSV_KS, new KreisSparKasseCsvBookingImporter());
+		IMPORTERS.put(ImportType.CSV_VB, new VolksbankCsvBookingImporter());
+		IMPORTERS.put(ImportType.CSV_KSK, new KreisSparKasseCsvBookingImporter());
 	}
 
 	public void importBookings() {
@@ -89,7 +89,7 @@ public class BankingService {
 		ImportDescriptor importDescriptor = getImportDescriptor(account);
 		String importPath = importDescriptor.buildImportPath();
 		logger.info("importing bookings for account [" + account + "] --> Pfad: " + importPath + " ["
-				+ account.getImportType() + "]");
+				+ account.getCreditInstitute().getImportType() + "]");
 		return processFiles(importPath, account, importDescriptor);
 	}
 
@@ -113,7 +113,7 @@ public class BankingService {
 	}
 
 	private List<Booking> processFile(Account account, File file, ImportDescriptor importDescriptor) {
-		List<Booking> bookings = getImporter(account.getImportType()).generateBookings(file, account);
+		List<Booking> bookings = getImporter(account.getCreditInstitute().getImportType()).generateBookings(file, account);
 		if (bookings != null && !bookings.isEmpty()) {
 			List<Booking> newBookings = new ArrayList<>();
 			for (Booking booking : bookings) {

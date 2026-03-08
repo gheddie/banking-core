@@ -20,4 +20,14 @@ public class StringHelperTest {
 		assertEquals("", StringHelper.debracket(null));
 		assertEquals("", StringHelper.debracket(""));
 	}
+	
+	@Test
+	void testLimitLength() {
+		assertEquals("123", StringHelper.limitLength("1234", 3));
+		assertEquals("1234", StringHelper.limitLength("1234", 4));
+		assertEquals("1234", StringHelper.limitLength("1234", 5));
+		
+		assertEquals("", StringHelper.limitLength("", 5));
+		assertEquals("", StringHelper.limitLength(null, 5));
+	}
 }
