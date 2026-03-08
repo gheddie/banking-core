@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,19 +21,26 @@ import org.springframework.stereotype.Service;
 
 import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.dto.BookingFileImportDto;
+import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.entity.BookingImport;
 import de.gravitex.banking_core.entity.BookingImportItem;
+import de.gravitex.banking_core.entity.BudgetPlanning;
+import de.gravitex.banking_core.entity.BudgetPlanningItem;
 import de.gravitex.banking_core.entity.ImportType;
 import de.gravitex.banking_core.entity.TradingPartner;
+import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
 import de.gravitex.banking_core.importer.CsvBookingImporter;
+import de.gravitex.banking_core.importer.KreisSparKasseCsvBookingImporter;
+import de.gravitex.banking_core.importer.VolksbankCsvBookingImporter;
 import de.gravitex.banking_core.importer.base.BookingImporter;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.BookingImportItemRepository;
 import de.gravitex.banking_core.repository.BookingImportRepository;
 import de.gravitex.banking_core.repository.BookingRepository;
+import de.gravitex.banking_core.repository.BudgetPlanningRepository;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
 import de.gravitex.banking_core.util.DateUtil;
 import de.gravitex.banking_core.util.StringHelper;
@@ -60,10 +68,14 @@ public class BankingService {
 	
 	@Autowired
 	private BookingImportItemRepository bookingImportItemRepository;
+	
+	@Autowired
+	private BudgetPlanningRepository budgetPlanningRepository;	
 
 	private static final Map<ImportType, BookingImporter> IMPORTERS = new HashMap<>();
 	static {
-		IMPORTERS.put(ImportType.CSV, new CsvBookingImporter());
+		IMPORTERS.put(ImportType.CSV, new VolksbankCsvBookingImporter());
+		IMPORTERS.put(ImportType.CSV_KS, new KreisSparKasseCsvBookingImporter());
 	}
 
 	public void importBookings() {
@@ -292,5 +304,27 @@ public class BankingService {
 			return BigDecimal.ZERO;	
 		}
 		return bookings.get(0).getAmountAfterBooking();
+	}
+
+	public BudgetPlanningEvaluation createBudgetPlanningEvaluation(int month, int year) {
+		
+		BudgetPlanningEvaluation evaluation = new BudgetPlanningEvaluation();
+		BudgetPlanning budgetPlanning = budgetPlanningRepository.findByYearAndMonth(year, month);		
+		if (budgetPlanning == null) {
+			throw new BudgetPlanningException("no budget planning provdided for {"+month+"/"+year+"}!!!");
+		}
+		LocalDate reference = LocalDate.of(year, month, 1);
+		LocalDate startDay = reference.with(TemporalAdjusters.firstDayOfMonth());				
+		LocalDate endDay = reference.with(TemporalAdjusters.lastDayOfMonth());
+		List<Booking> bookingsInRange = bookingRepository.findBookingsInRange(startDay, endDay);
+		logger.info(
+				"evaluating {" + bookingsInRange.size() + "} bookings from {" + startDay + "} to {" + endDay + "} ...");
+		for (BudgetPlanningItem aPlanningItem : budgetPlanning.getBudgetPlanningItems()) {
+			evaluation.initPurposeKey(aPlanningItem.getPurposeCategory().getPurposeKey());
+		}
+		for (Booking bookingInRange : bookingsInRange) {
+			evaluation.acceptBooking(bookingInRange);
+		}
+		return evaluation;
 	}
 }

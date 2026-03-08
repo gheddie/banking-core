@@ -37,7 +37,7 @@ public class BudgetPlanningService {
 		assertBudgetPlanningUniqueByTimeKey(aBudgetPlanningDto);
 		assertPurposeCategorysUnique(aBudgetPlanningDto);
 		assertBudgetPlanningMonth(aBudgetPlanningDto);
-		assertInFuture(aBudgetPlanningDto);
+		// assertInFuture(aBudgetPlanningDto);
 
 		BudgetPlanning budgetPlanning = new BudgetPlanning();
 		budgetPlanning.setMonth(aBudgetPlanningDto.getMonth());

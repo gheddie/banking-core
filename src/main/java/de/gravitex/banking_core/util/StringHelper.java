@@ -2,6 +2,8 @@ package de.gravitex.banking_core.util;
 
 public class StringHelper {
 
+	private static final String BRACKET = "\"";
+
 	public static String seperateList(Object[] aObjects, String aCustomSeperator) {
         String separated = "";
         int counter = 0;
@@ -30,5 +32,16 @@ public class StringHelper {
 
 	public static boolean isBlank(String value) {
 		return value == null || value.isEmpty();
+	}
+
+	public static String debracket(String aValue) {
+		if (aValue == null || aValue.isBlank()) {
+			return "";
+		}
+		if (aValue.startsWith(BRACKET) && aValue.endsWith(BRACKET)) {
+			String tmp = aValue.substring(1, aValue.length()-1);
+			return tmp;
+		}
+		return aValue;
 	}
 }

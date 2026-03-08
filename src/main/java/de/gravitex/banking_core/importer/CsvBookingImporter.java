@@ -12,9 +12,8 @@ import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.exception.BookingImportException;
 import de.gravitex.banking_core.importer.base.BookingImporter;
 import de.gravitex.banking_core.importer.exception.csv.CsvProcessingMissingAttributeException;
-import de.gravitex.banking_core.importer.exception.csv.base.CsvProcessingException;
 
-public class CsvBookingImporter extends BookingImporter {
+public abstract class CsvBookingImporter extends BookingImporter {
 
 	private static final String DELIMITER = ";";
 
@@ -25,12 +24,14 @@ public class CsvBookingImporter extends BookingImporter {
 			List<Booking> bookings = new ArrayList<>();
 			for (CsvLine aCsvLine : wrapper.getLinesOrdered()) {
 				Booking booking = new Booking();
-				booking.setText(aCsvLine.getValueByKey("Buchungstext"));
-				booking.setPurposeOfUse(aCsvLine.getValueByKey("Verwendungszweck"));
-				booking.setAmount(getBigDecimal(aCsvLine.getValueByKey("Betrag")));
-				booking.setAmountAfterBooking(getBigDecimal(aCsvLine.getValueByKey("Saldo nach Buchung")));
-				booking.setTradingPartnerKey(aCsvLine.getValueByKey("Name Zahlungsbeteiligter"));
-				booking.setBookingDate(parseLocalDate(aCsvLine.getValueByKey("Buchungstag")));
+				booking.setText(aCsvLine.getValueByKey(bookingTextDescriptor()));
+				booking.setPurposeOfUse(aCsvLine.getValueByKey(purposeOfUseDescriptor()));
+				booking.setAmount(getBigDecimal(aCsvLine.getValueByKey(amountDescriptor())));
+				if (amountAfterBookingPresent()) {
+					booking.setAmountAfterBooking(getBigDecimal(aCsvLine.getValueByKey(amountPostBookingDescriptor())));	
+				}
+				booking.setTradingPartnerKey(aCsvLine.getValueByKey(partnerNameDescriptor()));
+				booking.setBookingDate(parseLocalDate(aCsvLine.getValueByKey(bookingDayDescriptor())));
 				bookings.add(booking);
 			}
 			return bookings;
@@ -39,6 +40,20 @@ public class CsvBookingImporter extends BookingImporter {
 					+ file.getAbsolutePath() + "} for account {"+account.getName()+"}!!!");
 		}
 	}
+
+	protected abstract boolean amountAfterBookingPresent();
+
+	protected abstract String bookingDayDescriptor();
+
+	protected abstract String partnerNameDescriptor();
+
+	protected abstract String amountPostBookingDescriptor();
+
+	protected abstract String amountDescriptor();
+
+	protected abstract String purposeOfUseDescriptor();
+
+	protected abstract String bookingTextDescriptor();
 
 	private class CsvWrapper {
 
