@@ -102,8 +102,8 @@ CREATE TABLE booking_import_item (
 
 CREATE TABLE budget_planning (
     id BIGINT,
-    month int not null,
-    year int not null,
+    planning_month int not null,
+    planning_year int not null,
 	primary key (id)
 );
 
@@ -121,7 +121,7 @@ CREATE TABLE budget_planning_item (
 ---------------------------------------------------------------------------------------------------------------
 
 --budget_planning
-ALTER TABLE budget_planning ADD CONSTRAINT uc_month_year UNIQUE (month, year);
+ALTER TABLE budget_planning ADD CONSTRAINT uc_month_year UNIQUE (planning_month, planning_year);
 
 --budget_planning_item
 ALTER TABLE budget_planning_item ADD CONSTRAINT uc_budgetplanning_purposecategory UNIQUE (budget_planning_id, purpose_category_id); 

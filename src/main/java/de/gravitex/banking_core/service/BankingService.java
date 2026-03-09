@@ -33,6 +33,7 @@ import de.gravitex.banking_core.entity.ImportType;
 import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
+import de.gravitex.banking_core.exception.MergePurposeCategoriesException;
 import de.gravitex.banking_core.importer.KreisSparKasseCsvBookingImporter;
 import de.gravitex.banking_core.importer.VolksbankCsvBookingImporter;
 import de.gravitex.banking_core.importer.base.BookingImporter;
@@ -335,5 +336,13 @@ public class BankingService {
 			evaluation.acceptBooking(bookingInRange);
 		}
 		return evaluation;
+	}
+
+	public void mergePurposeCategories(List<TradingPartner> aTradingPartners) {
+		
+		for (TradingPartner aTradingPartner : aTradingPartners) {
+			
+		}
+		throw new MergePurposeCategoriesException("123");
 	}
 }
