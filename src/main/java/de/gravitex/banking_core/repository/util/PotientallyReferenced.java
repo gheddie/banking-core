@@ -34,7 +34,7 @@ public class PotientallyReferenced {
 		return potentiallyReferringEntites;
 	}
 
-	public void tryAndFail() {
+	public void failForActualReferences() {
 		List<PotentiallyReferingEntity> failings = getFailings();
 		if (failings.isEmpty()) {
 			return;

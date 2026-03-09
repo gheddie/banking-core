@@ -18,12 +18,12 @@ public class DataIntegrityService {
 	private EntityManager entityManager;
 
 	@SuppressWarnings("unchecked")
-	public void testAndFailReferringEntities(PotientallyReferenced aPotientallyReferenced) {
+	public PotientallyReferenced satisfyPotientallyReferenced(PotientallyReferenced aPotientallyReferenced) {
 		for (PotentiallyReferingEntity aReferringEntity : aPotientallyReferenced.getPotentiallyReferringEntites()) {
 			aReferringEntity.acceptReferringEntities(entityManager.createQuery(aReferringEntity.buildQueryString())
 					.setParameter("param", aPotientallyReferenced.getEntity()).getResultList());
 		}
-		aPotientallyReferenced.tryAndFail();
+		return aPotientallyReferenced;
 	}
 
 	public void assertOptionalPresent(Optional<? extends IdEntity> aOptional) {

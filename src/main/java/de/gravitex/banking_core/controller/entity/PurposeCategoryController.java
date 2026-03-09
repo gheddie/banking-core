@@ -49,9 +49,11 @@ public class PurposeCategoryController implements PersistableEntityController<Pu
 		Optional<PurposeCategory> purposeCategoryOptional = purposeCategoryRepository.findById(aPurposecategoryId);		
 		integrityService.assertOptionalPresent(purposeCategoryOptional);
 		PurposeCategory aPurposeCategory = purposeCategoryOptional.get();
-		integrityService.testAndFailReferringEntities(PotientallyReferenced.forEntity(aPurposeCategory)
-				.withPotentiallyReferringEntity(Booking.class, "purposeCategory")
-				.withPotentiallyReferringEntity(TradingPartner.class, "purposeCategory"));
+		integrityService
+				.satisfyPotientallyReferenced(PotientallyReferenced.forEntity(aPurposeCategory)
+						.withPotentiallyReferringEntity(Booking.class, "purposeCategory")
+						.withPotentiallyReferringEntity(TradingPartner.class, "purposeCategory"))
+				.failForActualReferences();
 		purposeCategoryRepository.delete(aPurposeCategory);
 		return new ResponseEntity<String>("", HttpStatus.OK);
 	}

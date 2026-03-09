@@ -20,12 +20,17 @@ drop table account;
 drop table credit_institute;
 drop table trading_partner;
 drop table purpose_category;
+drop table budget_planning_item;
+drop table budget_planning;
+---
+drop view booking_view;
 */
 
 CREATE TABLE credit_institute (
     id BIGINT,
     bic varchar(32) not null,
     name varchar(255) not null,
+	import_type varchar(32) not null,
 	primary key (id),
 	CONSTRAINT BIC_UNIQUE UNIQUE(bic)
 );
@@ -34,8 +39,7 @@ CREATE TABLE account (
     id BIGINT,
     name varchar(255) not null,
 	identifier varchar(32) not null,
-    credit_institute_id BIGINT not null,
-    import_type varchar(32) not null,
+    credit_institute_id BIGINT not null,    
 	primary key (id),
 	FOREIGN KEY (credit_institute_id) REFERENCES credit_institute(id)
 );
@@ -71,7 +75,7 @@ CREATE TABLE booking (
     custom_remark varchar(255) null,
     account_id BIGINT not null,
     amount DECIMAL(10, 2) not null,
-    amount_after_booking DECIMAL(10, 2) not null,
+    amount_after_booking DECIMAL(10, 2) null,
     booking_date DATE not null,
     purpose_of_use varchar(1024) not null,
     trading_partner_id BIGINT not null,
