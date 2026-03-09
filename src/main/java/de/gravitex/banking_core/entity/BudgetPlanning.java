@@ -11,12 +11,12 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "month", "year" }) })
+// @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "month", "year" }) })
 public class BudgetPlanning extends IdEntity {
 
-	private int month;
+	private int planningMonth;
 	
-	private int year;
+	private int planningYear;
 	
 	@OneToMany(mappedBy = "budgetPlanning")
 	private List<BudgetPlanningItem> budgetPlanningItems;

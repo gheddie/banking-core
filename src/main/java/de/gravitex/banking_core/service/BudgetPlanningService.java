@@ -40,8 +40,8 @@ public class BudgetPlanningService {
 		// assertInFuture(aBudgetPlanningDto);
 
 		BudgetPlanning budgetPlanning = new BudgetPlanning();
-		budgetPlanning.setMonth(aBudgetPlanningDto.getMonth());
-		budgetPlanning.setYear(aBudgetPlanningDto.getYear());
+		budgetPlanning.setPlanningMonth(aBudgetPlanningDto.getMonth());
+		budgetPlanning.setPlanningYear(aBudgetPlanningDto.getYear());
 		
 		budgetPlanningRepository.save(budgetPlanning);
 
@@ -83,7 +83,7 @@ public class BudgetPlanningService {
 	}
 
 	private void assertBudgetPlanningUniqueByTimeKey(BudgetPlanningDto aBudgetPlanningDto) {
-		BudgetPlanning byYearAndMonth = budgetPlanningRepository.findByYearAndMonth(aBudgetPlanningDto.getYear(),
+		BudgetPlanning byYearAndMonth = budgetPlanningRepository.findByPlanningYearAndPlanningMonth(aBudgetPlanningDto.getYear(),
 				aBudgetPlanningDto.getMonth());
 		if (byYearAndMonth != null) {
 			throw new BudgetPlanningException(

@@ -1,62 +1,42 @@
----------------------------------------------------------------------------------------------------------------
---- Sequenz(en)
----------------------------------------------------------------------------------------------------------------
-
-CREATE SEQUENCE booking_id_seq
-    START WITH 1
-    INCREMENT BY 1;
-GO
-
----------------------------------------------------------------------------------------------------------------
---- Tabellen
----------------------------------------------------------------------------------------------------------------
-
-/*
-drop table booking_import_item;
-drop table booking;
-drop table booking_import;
-drop table standing_order;
-drop table account;
-drop table credit_institute;
-drop table trading_partner;
-drop table purpose_category;
-drop table budget_planning_item;
-drop table budget_planning;
----
-drop view booking_view;
-*/
+CREATE SEQUENCE "BOOKING_ID_SEQ" 
+MINVALUE 1 
+MAXVALUE 999999999 
+INCREMENT BY 1 
+START WITH 1234
+NOCACHE 
+NOCYCLE;
 
 CREATE TABLE credit_institute (
-    id BIGINT,
+    id bigint,
     bic varchar(32) not null,
     name varchar(255) not null,
-	import_type varchar(32) not null,
+    import_type varchar(32) not null,
 	primary key (id),
 	CONSTRAINT BIC_UNIQUE UNIQUE(bic)
 );
 
 CREATE TABLE account (
-    id BIGINT,
+    id bigint,
     name varchar(255) not null,
 	identifier varchar(32) not null,
-    credit_institute_id BIGINT not null,    
+    credit_institute_id bigint not null,
 	primary key (id),
 	FOREIGN KEY (credit_institute_id) REFERENCES credit_institute(id)
 );
 
 CREATE TABLE purpose_category (
-    id BIGINT,
+    id bigint,
     purpose_key varchar(255) not null,
 	primary key (id),
 	CONSTRAINT purpose_key_unique UNIQUE(purpose_key)
 );
 
 CREATE TABLE trading_partner (
-    id BIGINT,
+    id bigint,
     trading_key varchar(255) not null,
-    purpose_category_id BIGINT null,
+    purpose_category_id bigint null,
 	primary key (id),
-	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id),	
+	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id)
 );
 
 CREATE TABLE standing_order (
@@ -70,16 +50,16 @@ CREATE TABLE standing_order (
 );
 
 CREATE TABLE booking (
-    id BIGINT,
+    id bigint,
     text varchar(255) not null,
     custom_remark varchar(255) null,
-    account_id BIGINT not null,
+    account_id bigint not null,
     amount DECIMAL(10, 2) not null,
     amount_after_booking DECIMAL(10, 2) null,
     booking_date DATE not null,
     purpose_of_use varchar(1024) not null,
-    trading_partner_id BIGINT not null,
-    purpose_category_id BIGINT null,
+    trading_partner_id bigint not null,
+    purpose_category_id bigint null,
 	primary key (id),
 	FOREIGN KEY (account_id) REFERENCES account(id),
 	FOREIGN KEY (trading_partner_id) REFERENCES trading_partner(id),
@@ -89,7 +69,7 @@ CREATE TABLE booking (
 CREATE TABLE booking_import (
 	id bigint,
 	file_name varchar(255) not null,
-	import_date DATE not null,
+	import_date date not null,
 	account_id bigint not null,
 	primary key (id),
 	FOREIGN KEY (account_id) REFERENCES account(id)
@@ -106,9 +86,9 @@ CREATE TABLE booking_import_item (
 );
 
 CREATE TABLE budget_planning (
-    id BIGINT,
-    planning_month int not null,
-    planning_year int not null,
+    id bigint,
+    planning_month integer not null,
+    planning_year integer not null,
 	primary key (id)
 );
 
@@ -121,22 +101,6 @@ CREATE TABLE budget_planning_item (
 	FOREIGN KEY (budget_planning_id) REFERENCES budget_planning(id)
 );
 
----------------------------------------------------------------------------------------------------------------
---- Unique Constraints
----------------------------------------------------------------------------------------------------------------
-
---budget_planning
-ALTER TABLE budget_planning ADD CONSTRAINT uc_month_year UNIQUE (planning_month, planning_year);
-
---budget_planning_item
-ALTER TABLE budget_planning_item ADD CONSTRAINT uc_budgetplanning_purposecategory UNIQUE (budget_planning_id, purpose_category_id);  	
-
----------------------------------------------------------------------------------------------------------------
---- Views
----------------------------------------------------------------------------------------------------------------
-
---select * from booking_view
---drop view booking_view
 CREATE VIEW booking_view AS
 select
 b.id,
@@ -158,4 +122,32 @@ inner join trading_partner tp on (tp.id = b.trading_partner_id )
 left join purpose_category pc on (pc.id = tp.purpose_category_id)
 left join purpose_category pc_booking on (pc_booking.id = b.purpose_category_id)
 left join booking_import_item bii on (bii.booking_id = b.id)
-left join booking_import bi on (bi.id = bii.booking_import_id)
+left join booking_import bi on (bi.id = bii.booking_import_id);
+
+insert into purpose_category (id, purpose_key) values (1,'Altersvorsorge');
+insert into purpose_category (id, purpose_key) values (2,'Apotheke');
+insert into purpose_category (id, purpose_key) values (3,'Band');
+insert into purpose_category (id, purpose_key) values (4,'Einkauf');
+insert into purpose_category (id, purpose_key) values (5,'Eltern');
+insert into purpose_category (id, purpose_key) values (6,'Essen gehen');
+insert into purpose_category (id, purpose_key) values (7,'Fahrrad');
+insert into purpose_category (id, purpose_key) values (8,'Fast Food');
+insert into purpose_category (id, purpose_key) values (9,'Fitness');
+insert into purpose_category (id, purpose_key) values (10,'Gehalt');
+insert into purpose_category (id, purpose_key) values (11,'Google Play');
+insert into purpose_category (id, purpose_key) values (12,'Kinder');
+insert into purpose_category (id, purpose_key) values (13,'Klamotten');
+insert into purpose_category (id, purpose_key) values (14,'Miete');
+insert into purpose_category (id, purpose_key) values (15,'Parken');
+insert into purpose_category (id, purpose_key) values (16,'Paypal');
+insert into purpose_category (id, purpose_key) values (17,'Rauchen');
+insert into purpose_category (id, purpose_key) values (18,'Rundfunk');
+insert into purpose_category (id, purpose_key) values (19,'Sonstiges');
+insert into purpose_category (id, purpose_key) values (20,'Sparkasse');
+insert into purpose_category (id, purpose_key) values (21,'Spenden');
+insert into purpose_category (id, purpose_key) values (22,'Tanken');
+insert into purpose_category (id, purpose_key) values (23,'Technik');
+insert into purpose_category (id, purpose_key) values (24,'Telefonie/Internet');
+insert into purpose_category (id, purpose_key) values (25,'Unterhalt');
+insert into purpose_category (id, purpose_key) values (26,'Versicherung');
+insert into purpose_category (id, purpose_key) values (27,'Urlaub');

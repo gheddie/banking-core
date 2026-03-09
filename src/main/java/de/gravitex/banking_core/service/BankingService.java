@@ -3,6 +3,7 @@ package de.gravitex.banking_core.service;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -32,7 +33,6 @@ import de.gravitex.banking_core.entity.ImportType;
 import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
-import de.gravitex.banking_core.importer.CsvBookingImporter;
 import de.gravitex.banking_core.importer.KreisSparKasseCsvBookingImporter;
 import de.gravitex.banking_core.importer.VolksbankCsvBookingImporter;
 import de.gravitex.banking_core.importer.base.BookingImporter;
@@ -79,6 +79,7 @@ public class BankingService {
 	}
 
 	public void importBookings() {
+		checkImportRoot();
 		logger.info("importing all bookings [" + rootDirectory + "]...");
 		for (Account account : accountRepository.findAll()) {
 			importBookingsForAccount(account);
@@ -86,11 +87,19 @@ public class BankingService {
 	}
 
 	public List<BookingFileImportDto> importBookingsForAccount(Account account) {
+		checkImportRoot();
 		ImportDescriptor importDescriptor = getImportDescriptor(account);
 		String importPath = importDescriptor.buildImportPath();
 		logger.info("importing bookings for account [" + account + "] --> Pfad: " + importPath + " ["
 				+ account.getCreditInstitute().getImportType() + "]");
 		return processFiles(importPath, account, importDescriptor);
+	}
+
+	private void checkImportRoot() {
+		Path path = Paths.get(rootDirectory);
+		if (!Files.exists(path)) {
+			throw new IllegalArgumentException("import root {"+rootDirectory+"} does not exist!!!");
+		}
 	}
 
 	@Transactional
@@ -309,7 +318,7 @@ public class BankingService {
 	public BudgetPlanningEvaluation createBudgetPlanningEvaluation(int month, int year) {
 		
 		BudgetPlanningEvaluation evaluation = new BudgetPlanningEvaluation();
-		BudgetPlanning budgetPlanning = budgetPlanningRepository.findByYearAndMonth(year, month);		
+		BudgetPlanning budgetPlanning = budgetPlanningRepository.findByPlanningYearAndPlanningMonth(year, month);		
 		if (budgetPlanning == null) {
 			throw new BudgetPlanningException("no budget planning provdided for {"+month+"/"+year+"}!!!");
 		}

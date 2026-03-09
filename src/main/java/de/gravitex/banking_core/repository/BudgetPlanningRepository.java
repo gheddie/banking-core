@@ -6,5 +6,5 @@ import de.gravitex.banking_core.entity.BudgetPlanning;
 
 public interface BudgetPlanningRepository extends JpaRepository<BudgetPlanning, Long> {
 
-	BudgetPlanning findByYearAndMonth(int aYear, int aMonth);	
+	BudgetPlanning findByPlanningYearAndPlanningMonth(int aYear, int aMonth);	
 }
