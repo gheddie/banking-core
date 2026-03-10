@@ -12,10 +12,14 @@ import lombok.Data;
 public class TradingPartnersMergeResult extends BankingDto {
 
 	private List<Booking> switchedBookings = new ArrayList<>();
-	
+
 	private TradingPartner newTradingPartner;
 
 	public void addSwitchedBooking(Booking aBookingToSwitch) {
-		switchedBookings .add(aBookingToSwitch);
+		switchedBookings.add(aBookingToSwitch);
+	}
+
+	public String summarize() {
+		return switchedBookings.size() + " umgebucht auf Partner {" + newTradingPartner.getTradingKey() + "}";
 	}
 }
