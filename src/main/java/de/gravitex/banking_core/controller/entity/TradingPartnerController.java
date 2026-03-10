@@ -10,14 +10,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
+import de.gravitex.banking_core.dto.MergeTradingPartners;
+import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
 import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
+import de.gravitex.banking_core.service.BankingService;
 
 @RestController
 public class TradingPartnerController implements PersistableEntityController<TradingPartner> {
@@ -26,6 +30,9 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 	
 	@Autowired
 	private TradingPartnerRepository tradingPartnerRepository;
+	
+	@Autowired
+	BankingService bankingService;
 	
 	@GetMapping(value = "tradingpartners")
 	public ResponseEntity<List<TradingPartner>> findAll() {
@@ -56,5 +63,11 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 	public ResponseEntity<TradingPartner> put(@RequestBody TradingPartner entity) {
 		tradingPartnerRepository.save(entity);
 		return new ResponseEntity<TradingPartner>(entity, HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "mergetradingpartners")
+	public ResponseEntity<TradingPartnersMergeResult> mergeTradingPartners(@RequestBody MergeTradingPartners aMergetradingPartners) {
+		return new ResponseEntity<TradingPartnersMergeResult>(bankingService.mergeTradingPartners(
+				aMergetradingPartners.getPartnersToMerge(), aMergetradingPartners.getNewTradingKey()), HttpStatus.OK);
 	}
 }

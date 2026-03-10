@@ -3,6 +3,7 @@ package de.gravitex.banking_core.repository.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.entity.base.IdEntity;
 import de.gravitex.banking_core.exception.ReferingEntitiesException;
 
@@ -50,5 +51,14 @@ public class PotientallyReferenced {
 			}
 		}
 		return failings;
+	}
+
+	public List<? extends IdEntity> getReferringEntities(Class<Booking> entityClass) {
+		for (PotentiallyReferingEntity aPotentiallyRefering : potentiallyReferringEntites) {
+			if (aPotentiallyRefering.isForEntityClass(entityClass)) {
+				return aPotentiallyRefering.getReferringEntities();
+			}
+		}
+		return new ArrayList<>();		
 	}
 }

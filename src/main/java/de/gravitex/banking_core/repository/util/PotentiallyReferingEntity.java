@@ -3,6 +3,7 @@ package de.gravitex.banking_core.repository.util;
 import java.text.MessageFormat;
 import java.util.List;
 
+import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.entity.base.IdEntity;
 
 public class PotentiallyReferingEntity {
@@ -36,5 +37,13 @@ public class PotentiallyReferingEntity {
 
 	public String format() {
 		return referenceClass.getSimpleName() + " ("+referringEntities.size()+")";
+	}
+	
+	public List<? extends IdEntity> getReferringEntities() {
+		return referringEntities;
+	}
+
+	public boolean isForEntityClass(Class<Booking> entityClass) {
+		return (entityClass.equals(referenceClass));
 	}
 }

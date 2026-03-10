@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.entity.PurposeCategory;
+import de.gravitex.banking_core.entity.TradingPartner;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
@@ -20,6 +21,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	List<Booking> findByAccountAndBookingDateOrderByAmountAfterBookingDesc(Account account, LocalDate aookingDate);
 
 	List<Booking> findByPurposeCategory(PurposeCategory aPurposeCategory);
+	
+	List<Booking> findByTradingPartner(TradingPartner aTradingPartner);
 
 	@Query("select b from Booking b where (bookingDate >= :aFrom or bookingDate = :aFrom) and (bookingDate <= :aTo or bookingDate = :aTo)")
 	List<Booking> findBookingsInRange(LocalDate aFrom, LocalDate aTo);

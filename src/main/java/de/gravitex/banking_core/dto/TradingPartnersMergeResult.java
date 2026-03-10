@@ -1,0 +1,21 @@
+package de.gravitex.banking_core.dto;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import de.gravitex.banking_core.dto.base.BankingDto;
+import de.gravitex.banking_core.entity.Booking;
+import de.gravitex.banking_core.entity.TradingPartner;
+import lombok.Data;
+
+@Data
+public class TradingPartnersMergeResult extends BankingDto {
+
+	private List<Booking> switchedBookings = new ArrayList<>();
+	
+	private TradingPartner newTradingPartner;
+
+	public void addSwitchedBooking(Booking aBookingToSwitch) {
+		switchedBookings .add(aBookingToSwitch);
+	}
+}

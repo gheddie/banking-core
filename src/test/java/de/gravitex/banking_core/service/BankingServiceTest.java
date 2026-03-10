@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 
 import de.gravitex.banking_core.BankingCoreApplication;
+import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.CreditInstitute;
 import de.gravitex.banking_core.entity.ImportType;
@@ -89,7 +90,7 @@ public class BankingServiceTest {
     }
     
     @Test
-    public void testMergePurposeCategories() {
+    public void testMergePurposeCategories() {    	    
     	
     	CreditInstitute creditInstitute = new CreditInstitute();
     	creditInstitute.setBic("GENODEV1WBU");
@@ -106,10 +107,19 @@ public class BankingServiceTest {
 		accountRepository.save(account);	
 		
 		bankingService.importBookingsForAccount(account);
+		
+		int tradingPartnerCount = tradingPartnerRepository.findAll().size();
     	
     	List<TradingPartner> mcDonalds = findMcDonalds(tradingPartnerRepository.findAll());
+		int mcdSize = mcDonalds.size(); 
     	
-    	// bankingService.mergePurposeCategories(mcDonalds);
+    	TradingPartnersMergeResult merge = bankingService.mergeTradingPartners(mcDonalds, "ABC");
+    	
+    	assertEquals(tradingPartnerCount + 1 - mcdSize, tradingPartnerRepository.findAll().size());
+    	
+    	// bookings transferred
+		assertEquals(merge.getSwitchedBookings().size(),
+				bookingRepository.findByTradingPartner(merge.getNewTradingPartner()).size());
     }
 
 	private List<TradingPartner> findMcDonalds(List<TradingPartner> allTradingPartners) {

@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.dto.BookingFileImportDto;
 import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
+import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
 import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.entity.BookingImport;
@@ -30,10 +32,11 @@ import de.gravitex.banking_core.entity.BookingImportItem;
 import de.gravitex.banking_core.entity.BudgetPlanning;
 import de.gravitex.banking_core.entity.BudgetPlanningItem;
 import de.gravitex.banking_core.entity.ImportType;
+import de.gravitex.banking_core.entity.PurposeCategory;
 import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
-import de.gravitex.banking_core.exception.MergePurposeCategoriesException;
+import de.gravitex.banking_core.exception.MergeTradingPartnersException;
 import de.gravitex.banking_core.importer.KreisSparKasseCsvBookingImporter;
 import de.gravitex.banking_core.importer.VolksbankCsvBookingImporter;
 import de.gravitex.banking_core.importer.base.BookingImporter;
@@ -42,7 +45,9 @@ import de.gravitex.banking_core.repository.BookingImportItemRepository;
 import de.gravitex.banking_core.repository.BookingImportRepository;
 import de.gravitex.banking_core.repository.BookingRepository;
 import de.gravitex.banking_core.repository.BudgetPlanningRepository;
+import de.gravitex.banking_core.repository.PurposeCategoryRepository;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
+import de.gravitex.banking_core.repository.util.PotientallyReferenced;
 import de.gravitex.banking_core.util.DateUtil;
 import de.gravitex.banking_core.util.StringHelper;
 import jakarta.transaction.Transactional;
@@ -72,6 +77,12 @@ public class BankingService {
 	
 	@Autowired
 	private BudgetPlanningRepository budgetPlanningRepository;	
+	
+	@Autowired
+	private PurposeCategoryRepository purposeCategoryRepository;
+	
+	@Autowired
+	DataIntegrityService integrityService;
 
 	private static final Map<ImportType, BookingImporter> IMPORTERS = new HashMap<>();
 	static {
@@ -338,11 +349,56 @@ public class BankingService {
 		return evaluation;
 	}
 
-	public void mergePurposeCategories(List<TradingPartner> aTradingPartners) {
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public TradingPartnersMergeResult mergeTradingPartners(List<TradingPartner> aTradingPartners, String newTradingKey) {
 		
-		for (TradingPartner aTradingPartner : aTradingPartners) {
-			
+		if (aTradingPartners == null || aTradingPartners.isEmpty()) {
+			throw new MergeTradingPartnersException("no trading partners provided to merge!!!");
 		}
-		throw new MergePurposeCategoriesException("123");
+		
+		if (StringHelper.isBlank(newTradingKey)) {
+			throw new MergeTradingPartnersException("new trading key must be provided!!!");
+		}
+		
+		TradingPartnersMergeResult mergeTradingPartners = new TradingPartnersMergeResult();
+				
+		Set<Long> existingPurposeCategoryIds = new HashSet<>();
+		for (TradingPartner aTradingPartner : aTradingPartners) {
+			if (aTradingPartner.getPurposeCategory() != null) {
+				existingPurposeCategoryIds.add(aTradingPartner.getPurposeCategory().getId());
+			}
+		}
+		if (existingPurposeCategoryIds.size() > 1) {
+			throw new MergeTradingPartnersException("exisiting purpose categories must be unique!!!");
+		}
+		// all refering bookings
+		List<Booking> bookingsToSwitch = new ArrayList<>();
+		for (TradingPartner aTradingPartner : aTradingPartners) {			
+			bookingsToSwitch.addAll((Collection<? extends Booking>) integrityService
+					.satisfyPotientallyReferenced(PotientallyReferenced.forEntity(aTradingPartner)
+							.withPotentiallyReferringEntity(Booking.class, "tradingPartner"))
+					.getReferringEntities(Booking.class));
+		}		
+		// switch to new trading partner
+		TradingPartner newTradingPartner = createTradingPartner(newTradingKey);
+		mergeTradingPartners.setNewTradingPartner(newTradingPartner);
+		for (Booking aBookingToSwitch : bookingsToSwitch) {
+			aBookingToSwitch.setTradingPartner(newTradingPartner);
+			bookingRepository.save(aBookingToSwitch);
+			mergeTradingPartners.addSwitchedBooking(aBookingToSwitch);
+		}
+		// remove given trading partners
+		for (TradingPartner aTradingPartner : aTradingPartners) {
+			tradingPartnerRepository.delete(aTradingPartner);
+		}
+				
+		return mergeTradingPartners;
+	}
+
+	private TradingPartner createTradingPartner(String newTradingKey) {
+		TradingPartner newTradingPartner = new TradingPartner();
+		newTradingPartner.setTradingKey(newTradingKey);
+		return tradingPartnerRepository.save(newTradingPartner);
 	}
 }
