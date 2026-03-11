@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import de.gravitex.banking_core.entity.PurposeCategory;
-import de.gravitex.banking_core.entity.TradingPartner;
+import de.gravitex.banking.entity.PurposeCategory;
+import de.gravitex.banking.entity.TradingPartner;
 
 public interface TradingPartnerRepository extends JpaRepository<TradingPartner, Long> {
 

@@ -11,8 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.gravitex.banking_core.entity.Account;
-import de.gravitex.banking_core.entity.Booking;
+import de.gravitex.banking.entity.Account;
+import de.gravitex.banking.entity.Booking;
 
 public abstract class BookingImporter {
 	

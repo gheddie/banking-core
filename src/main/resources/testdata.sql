@@ -11,6 +11,9 @@ insert into credit_institute (id, name, bic, import_type) values (2, 'Kreisspark
 insert into account (id, name, credit_institute_id, identifier, import_type) values (1, 'Giro-Konto', 1, 'GIRO_PRIVAT', 'CSV');
 insert into account (id, name, credit_institute_id, identifier, import_type) values (2, 'Teilhabe', 1, 'THVOBA', 'CSV');
 
+--select * from recurring_position
+insert into recurring_position values(1, 1, 'MONTHLY');
+
 ------------------------------------------------------------------------------------------
 --- purpose_category
 ------------------------------------------------------------------------------------------

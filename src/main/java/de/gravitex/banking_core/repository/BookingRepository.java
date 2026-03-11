@@ -6,10 +6,10 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import de.gravitex.banking_core.entity.Account;
-import de.gravitex.banking_core.entity.Booking;
-import de.gravitex.banking_core.entity.PurposeCategory;
-import de.gravitex.banking_core.entity.TradingPartner;
+import de.gravitex.banking.entity.Account;
+import de.gravitex.banking.entity.Booking;
+import de.gravitex.banking.entity.PurposeCategory;
+import de.gravitex.banking.entity.TradingPartner;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 

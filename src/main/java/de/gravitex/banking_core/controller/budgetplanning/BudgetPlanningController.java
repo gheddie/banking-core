@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.gravitex.banking.entity.BudgetPlanning;
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.dto.BudgetPlanningDto;
 import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
-import de.gravitex.banking_core.entity.BudgetPlanning;
 import de.gravitex.banking_core.repository.BudgetPlanningRepository;
 import de.gravitex.banking_core.service.BankingService;
 import de.gravitex.banking_core.service.BudgetPlanningService;

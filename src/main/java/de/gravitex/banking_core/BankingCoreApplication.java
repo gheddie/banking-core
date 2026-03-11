@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.event.EventListener;
 
 import de.gravitex.banking_core.service.BankingService;
 
 @SpringBootApplication
+@EntityScan(basePackages = {"de.gravitex.banking.entity", "de.gravitex.banking_core.entity.view"})
 public class BankingCoreApplication {
 	
 	@Autowired

@@ -8,4 +8,6 @@ public class BookingAdminData {
 	private String datasourceName;
 	
 	private String importRoot;
+	
+	private String databaseUrl;
 }

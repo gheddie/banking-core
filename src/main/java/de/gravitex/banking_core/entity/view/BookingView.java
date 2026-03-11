@@ -3,9 +3,9 @@ package de.gravitex.banking_core.entity.view;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import de.gravitex.banking_core.entity.annotation.PresentMe;
-import de.gravitex.banking_core.entity.base.NoIdEntity;
-import de.gravitex.banking_core.formatter.DateTimeValueFormatter;
+import de.gravitex.banking.entity.annotation.PresentMe;
+import de.gravitex.banking.entity.base.NoIdEntity;
+import de.gravitex.banking.formatter.DateTimeValueFormatter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

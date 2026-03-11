@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.gravitex.banking.entity.Account;
 import de.gravitex.banking_core.dto.BookingFileImportDto;
-import de.gravitex.banking_core.entity.Account;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.service.BankingService;
 import de.gravitex.banking_core.service.DataIntegrityService;

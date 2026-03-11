@@ -12,12 +12,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 
+import de.gravitex.banking.entity.Account;
+import de.gravitex.banking.entity.CreditInstitute;
+
+import de.gravitex.banking.entity.TradingPartner;
+import de.gravitex.banking.enumerated.ImportType;
 import de.gravitex.banking_core.BankingCoreApplication;
 import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
-import de.gravitex.banking_core.entity.Account;
-import de.gravitex.banking_core.entity.CreditInstitute;
-import de.gravitex.banking_core.entity.ImportType;
-import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.BookingRepository;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;

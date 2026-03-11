@@ -12,12 +12,16 @@ public class BookingAdminController {
 	
 	@Value("${import.rootdir}")
 	private String importRoot;
+	
+	@Value("${spring.datasource.url}")
+	private String databaseUrl;
 
 	@GetMapping(value = "bookingadmindata")
 	public BookingAdminData getAdminData() {
 		BookingAdminData bookingAdminData = new BookingAdminData();
 		bookingAdminData.setDatasourceName(datasourceName);
 		bookingAdminData.setImportRoot(importRoot);
+		bookingAdminData.setDatabaseUrl(databaseUrl);
 		return bookingAdminData;
 	}
 }

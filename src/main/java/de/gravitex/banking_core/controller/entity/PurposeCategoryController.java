@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.gravitex.banking.entity.Booking;
+import de.gravitex.banking.entity.PurposeCategory;
+import de.gravitex.banking.entity.TradingPartner;
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
-import de.gravitex.banking_core.entity.Booking;
-import de.gravitex.banking_core.entity.PurposeCategory;
-import de.gravitex.banking_core.entity.TradingPartner;
 import de.gravitex.banking_core.repository.PurposeCategoryRepository;
 import de.gravitex.banking_core.repository.util.PotientallyReferenced;
 import de.gravitex.banking_core.service.DataIntegrityService;

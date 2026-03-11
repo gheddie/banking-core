@@ -2,9 +2,9 @@ package de.gravitex.banking_core.dto;
 
 import java.math.BigDecimal;
 
+import de.gravitex.banking.entity.Account;
+import de.gravitex.banking.entity.annotation.PresentMe;
 import de.gravitex.banking_core.dto.base.BankingDto;
-import de.gravitex.banking_core.entity.Account;
-import de.gravitex.banking_core.entity.annotation.PresentMe;
 import lombok.Data;
 
 @Data

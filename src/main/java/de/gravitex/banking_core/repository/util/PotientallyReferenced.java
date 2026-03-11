@@ -3,8 +3,8 @@ package de.gravitex.banking_core.repository.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.gravitex.banking_core.entity.Booking;
-import de.gravitex.banking_core.entity.base.IdEntity;
+import de.gravitex.banking.entity.Booking;
+import de.gravitex.banking.entity.base.IdEntity;
 import de.gravitex.banking_core.exception.ReferingEntitiesException;
 
 public class PotientallyReferenced {

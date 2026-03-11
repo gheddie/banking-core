@@ -2,7 +2,7 @@ package de.gravitex.banking_core.exception;
 
 import java.util.List;
 
-import de.gravitex.banking_core.entity.base.IdEntity;
+import de.gravitex.banking.entity.base.IdEntity;
 import de.gravitex.banking_core.exception.base.BankingException;
 import de.gravitex.banking_core.repository.util.PotentiallyReferingEntity;
 

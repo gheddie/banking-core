@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import de.gravitex.banking_core.entity.base.IdEntity;
+import de.gravitex.banking.entity.base.IdEntity;
 import de.gravitex.banking_core.exception.OptionalNotPresentException;
 import de.gravitex.banking_core.repository.util.PotentiallyReferingEntity;
 import de.gravitex.banking_core.repository.util.PotientallyReferenced;

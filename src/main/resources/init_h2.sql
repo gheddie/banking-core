@@ -31,12 +31,21 @@ CREATE TABLE purpose_category (
 	CONSTRAINT purpose_key_unique UNIQUE(purpose_key)
 );
 
+CREATE TABLE recurring_position (
+    id BIGINT,
+    incoming bit not null,
+	recurring_interval varchar(32) not null,
+	primary key (id)
+);
+
 CREATE TABLE trading_partner (
     id bigint,
     trading_key varchar(255) not null,
     purpose_category_id bigint null,
+    recurring_position_id BIGINT null,
 	primary key (id),
-	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id)
+	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id),
+	FOREIGN KEY (recurring_position_id) REFERENCES recurring_position(id)
 );
 
 CREATE TABLE standing_order (

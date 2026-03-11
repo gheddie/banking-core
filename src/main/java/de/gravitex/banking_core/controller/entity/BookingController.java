@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.gravitex.banking.entity.Booking;
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
-import de.gravitex.banking_core.entity.Booking;
 import de.gravitex.banking_core.repository.BookingRepository;
 import de.gravitex.banking_core.service.BankingService;
 

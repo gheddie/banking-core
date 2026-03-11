@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.gravitex.banking_core.entity.Account;
-import de.gravitex.banking_core.entity.Booking;
+import de.gravitex.banking.entity.Account;
+import de.gravitex.banking.entity.Booking;
 import de.gravitex.banking_core.exception.BookingImportException;
 import de.gravitex.banking_core.importer.base.BookingImporter;
 import de.gravitex.banking_core.importer.exception.csv.CsvProcessingMissingAttributeException;

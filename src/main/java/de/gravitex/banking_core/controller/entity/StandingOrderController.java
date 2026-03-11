@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.gravitex.banking.entity.StandingOrder;
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
-import de.gravitex.banking_core.entity.StandingOrder;
 import de.gravitex.banking_core.repository.StandingOrderRepository;
 
 @RestController
