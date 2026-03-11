@@ -67,7 +67,8 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 				.withPotentiallyReferringEntity(Account.class, "creditInstitute")).failForActualReferences();
 		;				
 		creditInstituteRepository.delete(aCreditInstitute);
-		return new ResponseEntity<String>("", HttpStatus.OK);
+		return new ResponseEntity<String>("Kredit-Institut {" + aCreditInstitute.getName() + "} gelöscht!!!",
+				HttpStatus.OK);
 	}
 
 	@Override

@@ -1,0 +1,63 @@
+Vorbereitung
+---------------------------------------------------------------------------------------------
+Applikation gegen DB (H2 (mauelle Tests)) starten
+
+- Ein Kredit-Institut anlegen
+
+PUT@http://localhost:4712/creditinstitute
+@@@@@@ BODY @@@@@@ 
+{"name":"Volksbank Wendeburg","bic":"GENODEF1WBU","importType":"CSV_VB"}
+
+- Kontrolle, ob Kredit-Institut anlegt wurde
+GET@http://localhost:4712/creditinstitutes
+
+--> 1 Zeile gelesen
+
+- Kredit-Institut wieder löschen
+
+DELETE@http://localhost:4712/creditinstitute?id=[ID]
+
+--> Definierte Bestätigung (Kredit-Institut {Volksbank Wendeburg} gelöscht!!!) prüfen
+
+- Ein Kredit-Institut erneut anlegen
+
+PUT@http://localhost:4712/creditinstitute
+@@@@@@ BODY @@@@@@ 
+{"name":"Volksbank Wendeburg","bic":"GENODEF1WBU","importType":"CSV_VB"}
+
+- Dem Kredit-Institut ein Konto zuordnen
+
+PUT@http://localhost:4712/account
+@@@@@@ BODY @@@@@@ 
+{"name":"Giro-Konto","identifier":"GIRO_PRIVAT","creditInstitute":    {
+        "bic": "GENODEF1WBU",
+        "id": [ID],
+        "importType": "CSV_VB",
+        "name": "Volksbank Wendeburg"
+}}
+
+- Kontrolle, ob Konto anlegt wurde
+GET@http://localhost:4712/accounts
+
+--> 1 Zeile gelesen
+
+- Kredit-Institut wieder löschen
+
+DELETE@http://localhost:4712/creditinstitute?id=[ID]
+
+--> Definitierte Fehlermeldung prüfen
+
+CreditInstitute wird referenziert!
+Account (1)
+
+-- Buchungen importieren
+
+GET@http://localhost:4712/importbookings?accountId=[ID]
+
+--> Importierte Buchungen in der JSON-Antwort ?
+
+- Buchungen (für Account) abrufen
+
+GET@http://localhost:4712/bookings
+
+--> Importierte Buchungen in der JSON-Antwort ?
