@@ -4,8 +4,8 @@ delete from credit_institute;
 */
 
 --select * from credit_institute
-insert into credit_institute (id, name, bic, import_type) values (1, 'Volksbank Wendeburg', 'GENODEF1WBU', 'CSV_UNQUOTED');
-insert into credit_institute (id, name, bic, import_type) values (2, 'Kreissparkasse Peine', 'GENODEF2WBU', 'CSV_QUOTED');
+insert into credit_institute (id, name, bic, import_type) values (1, 'Volksbank Wendeburg', 'GENODEF1WBU', 'CSV_VB');
+insert into credit_institute (id, name, bic, import_type) values (2, 'Kreissparkasse Peine', 'GENODEF2WBU', 'CSV_KSK');
 
 --select * from account
 insert into account (id, name, credit_institute_id, identifier, import_type) values (1, 'Giro-Konto', 1, 'GIRO_PRIVAT', 'CSV');

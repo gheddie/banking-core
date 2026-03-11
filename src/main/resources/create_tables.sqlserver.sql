@@ -12,6 +12,7 @@ GO
 ---------------------------------------------------------------------------------------------------------------
 
 /*
+--tables
 drop table booking_import_item;
 drop table booking;
 drop table booking_import;
@@ -22,7 +23,7 @@ drop table trading_partner;
 drop table purpose_category;
 drop table budget_planning_item;
 drop table budget_planning;
----
+--views
 drop view booking_view;
 */
 

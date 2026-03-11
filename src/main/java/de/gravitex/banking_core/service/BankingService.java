@@ -381,7 +381,8 @@ public class BankingService {
 					.getReferringEntities(Booking.class));
 		}		
 		// switch to new trading partner
-		TradingPartner newTradingPartner = createTradingPartner(newTradingKey);
+		TradingPartner newTradingPartner = createTradingPartner(newTradingKey,
+				determinePurposeCategory(existingPurposeCategoryIds));
 		mergeTradingPartners.setNewTradingPartner(newTradingPartner);
 		for (Booking aBookingToSwitch : bookingsToSwitch) {
 			aBookingToSwitch.setTradingPartner(newTradingPartner);
@@ -396,9 +397,17 @@ public class BankingService {
 		return mergeTradingPartners;
 	}
 
-	private TradingPartner createTradingPartner(String newTradingKey) {
+	private PurposeCategory determinePurposeCategory(Set<Long> existingPurposeCategoryIds) {
+		if (existingPurposeCategoryIds.isEmpty()) {
+			return null;
+		}
+		return purposeCategoryRepository.findById(new ArrayList<>(existingPurposeCategoryIds).get(0)).get();
+	}
+
+	private TradingPartner createTradingPartner(String newTradingKey, PurposeCategory aPurposeCategory) {
 		TradingPartner newTradingPartner = new TradingPartner();
 		newTradingPartner.setTradingKey(newTradingKey);
+		newTradingPartner.setPurposeCategory(aPurposeCategory);
 		return tradingPartnerRepository.save(newTradingPartner);
 	}
 }

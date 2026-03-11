@@ -58,14 +58,4 @@ public class BookingController implements PersistableEntityController<Booking> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	/*
-	@PostMapping(path = "booking/import")
-	public ResponseEntity<List<Booking>> importBookings(@RequestParam("id") Long accountId) {
-		Optional<Account> accountOptional = accountRepository.findById(accountId);
-		integrityService.assertOptionalPresent(accountOptional);
-		return new ResponseEntity<List<Booking>>(bankingService.importBookingsForAccount(accountOptional.get()),
-				HttpStatus.OK);
-	}
-	*/
 }
