@@ -45,7 +45,7 @@ public class PurposeCategoryController implements PersistableEntityController<Pu
 
 	@Override
 	@DeleteMapping(path = "purposecategory")
-	public ResponseEntity<String> delete(@RequestParam("id") Long aPurposecategoryId) {				
+	public ResponseEntity<PurposeCategory> delete(@RequestParam("id") Long aPurposecategoryId) {				
 		Optional<PurposeCategory> purposeCategoryOptional = purposeCategoryRepository.findById(aPurposecategoryId);		
 		integrityService.assertOptionalPresent(purposeCategoryOptional);
 		PurposeCategory aPurposeCategory = purposeCategoryOptional.get();
@@ -55,7 +55,7 @@ public class PurposeCategoryController implements PersistableEntityController<Pu
 						.withPotentiallyReferringEntity(TradingPartner.class, "purposeCategory"))
 				.failForActualReferences();
 		purposeCategoryRepository.delete(aPurposeCategory);
-		return new ResponseEntity<String>("", HttpStatus.OK);
+		return new ResponseEntity<PurposeCategory>(aPurposeCategory, HttpStatus.OK);
 	}
 
 	@Override

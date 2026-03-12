@@ -60,16 +60,15 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 
 	@Override
 	@DeleteMapping(path = "creditinstitute")
-	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
+	public ResponseEntity<CreditInstitute> delete(@RequestParam("id") Long aEntityId) {
 		Optional<CreditInstitute> creditInstituteOptional = creditInstituteRepository.findById(aEntityId);
 		integrityService.assertOptionalPresent(creditInstituteOptional);
 		CreditInstitute aCreditInstitute = creditInstituteOptional.get();
 		integrityService.satisfyPotientallyReferenced(PotientallyReferenced.forEntity(aCreditInstitute)
 				.withPotentiallyReferringEntity(Account.class, "creditInstitute")).failForActualReferences();
-		;				
+		;
 		creditInstituteRepository.delete(aCreditInstitute);
-		return new ResponseEntity<String>("Kredit-Institut {" + aCreditInstitute.getName() + "} gelöscht!!!",
-				HttpStatus.OK);
+		return new ResponseEntity<CreditInstitute>(aCreditInstitute, HttpStatus.OK);
 	}
 
 	@Override

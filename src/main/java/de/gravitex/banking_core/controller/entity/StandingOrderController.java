@@ -33,7 +33,7 @@ public class StandingOrderController implements PersistableEntityController<Stan
 
 	@Override
 	@DeleteMapping(path = "standingorder")
-	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
+	public ResponseEntity<StandingOrder> delete(@RequestParam("id") Long aEntityId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

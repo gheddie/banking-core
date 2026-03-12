@@ -33,7 +33,7 @@ public class RecurringPositionController implements PersistableEntityController<
 	}
 
 	@Override
-	public ResponseEntity<String> delete(Long aEntityId) {
+	public ResponseEntity<RecurringPosition> delete(Long aEntityId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

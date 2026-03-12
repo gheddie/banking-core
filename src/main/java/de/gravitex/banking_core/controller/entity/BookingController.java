@@ -41,7 +41,7 @@ public class BookingController implements PersistableEntityController<Booking> {
 
 	@Override
 	@DeleteMapping(path = "booking")
-	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
+	public ResponseEntity<Booking> delete(@RequestParam("id") Long aEntityId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

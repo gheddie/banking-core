@@ -47,7 +47,7 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 
 	@Override
 	@DeleteMapping(path = "tradingpartner")
-	public ResponseEntity<String> delete(@RequestParam("id") Long aEntityId) {
+	public ResponseEntity<TradingPartner> delete(@RequestParam("id") Long aEntityId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

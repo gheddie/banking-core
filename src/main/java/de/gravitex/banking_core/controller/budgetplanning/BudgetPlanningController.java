@@ -50,7 +50,7 @@ public class BudgetPlanningController implements PersistableEntityController<Bud
 	}
 
 	@Override
-	public ResponseEntity<String> delete(Long aEntityId) {
+	public ResponseEntity<BudgetPlanning> delete(Long aEntityId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
