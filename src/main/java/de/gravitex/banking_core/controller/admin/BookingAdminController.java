@@ -15,6 +15,9 @@ public class BookingAdminController {
 	
 	@Value("${spring.datasource.url}")
 	private String databaseUrl;
+	
+	@Value("${spring.datasource.driver.class}")
+	private String databaseDriverClass;
 
 	@GetMapping(value = "bookingadmindata")
 	public BookingAdminData getAdminData() {
@@ -22,6 +25,7 @@ public class BookingAdminController {
 		bookingAdminData.setDatasourceName(datasourceName);
 		bookingAdminData.setImportRoot(importRoot);
 		bookingAdminData.setDatabaseUrl(databaseUrl);
+		bookingAdminData.setDatabaseDriverClass(databaseDriverClass);
 		return bookingAdminData;
 	}
 }

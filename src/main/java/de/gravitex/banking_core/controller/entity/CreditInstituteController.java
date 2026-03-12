@@ -25,6 +25,7 @@ import de.gravitex.banking_core.exception.InvalidBicException;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 import de.gravitex.banking_core.repository.util.PotientallyReferenced;
 import de.gravitex.banking_core.service.DataIntegrityService;
+import de.gravitex.banking_core.util.StringHelper;
 
 @RestController
 public class CreditInstituteController implements PersistableEntityController<CreditInstitute> {
@@ -88,6 +89,9 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 
 	private void checkBic(CreditInstitute aCreditInstitute) {
 		String bic = aCreditInstitute.getBic();
+		if (StringHelper.isBlank(bic)) {
+			throw new InvalidBicException("BIC must be provided!!!");
+		}
 		if (!BIC_PATTERN.matcher(bic).matches()) {
 			throw new InvalidBicException("Invalid BIC detected --> " + bic);
 		}

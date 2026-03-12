@@ -10,4 +10,6 @@ public class BookingAdminData {
 	private String importRoot;
 	
 	private String databaseUrl;
+	
+	private String databaseDriverClass;
 }
