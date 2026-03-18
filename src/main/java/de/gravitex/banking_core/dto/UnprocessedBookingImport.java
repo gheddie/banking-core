@@ -1,4 +1,4 @@
-package de.gravitex.banking_core.controller.bookingimport;
+package de.gravitex.banking_core.dto;
 
 import de.gravitex.banking.entity.annotation.PresentMe;
 import de.gravitex.banking_core.dto.base.BankingDto;

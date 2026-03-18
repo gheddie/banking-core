@@ -136,6 +136,7 @@ left join booking_import_item bii on (bii.booking_id = b.id)
 left join booking_import bi on (bi.id = bii.booking_import_id);
 
 insert into recurring_position (id, incoming, recurring_interval) values (1, 1, 'MONTHLY');
+insert into recurring_position (id, incoming, recurring_interval) values (2, 0, 'MONTHLY');
 
 insert into purpose_category (id, purpose_key) values (1,'Altersvorsorge');
 insert into purpose_category (id, purpose_key) values (2,'Apotheke');

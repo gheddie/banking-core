@@ -1,6 +1,7 @@
-package de.gravitex.banking_core.controller.budgetplanning;
+package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
 import de.gravitex.banking_core.repository.BudgetPlanningRepository;
 import de.gravitex.banking_core.service.BankingService;
 import de.gravitex.banking_core.service.BudgetPlanningService;
+import de.gravitex.banking_core.service.DataIntegrityService;
 
 @RestController
 public class BudgetPlanningController implements PersistableEntityController<BudgetPlanning> {
@@ -30,12 +32,9 @@ public class BudgetPlanningController implements PersistableEntityController<Bud
 	
 	@Autowired
 	BankingService bankingService;
-
-	@PostMapping(path = "budgetplanning")
-	public ResponseEntity<BudgetPlanningDto> acceptBudgetPlanning(@RequestBody BudgetPlanningDto aBudgetPlanningDto) {
-		budgetPlanningService.processBudgetPlanning(aBudgetPlanningDto);
-		return new ResponseEntity<BudgetPlanningDto>(aBudgetPlanningDto, HttpStatus.OK);
-	}
+	
+	@Autowired
+	private DataIntegrityService integrityService;
 
 	@Override
 	@GetMapping(value = "budgetplannings")
@@ -50,9 +49,12 @@ public class BudgetPlanningController implements PersistableEntityController<Bud
 	}
 
 	@Override
-	public ResponseEntity<BudgetPlanning> delete(Long aEntityId) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<BudgetPlanning> delete(@RequestParam("id") Long aEntityId) {
+		Optional<BudgetPlanning> optional = budgetPlanningRepository.findById(aEntityId);		
+		integrityService.assertOptionalPresent(optional, BudgetPlanning.class);
+		BudgetPlanning entity = optional.get();
+		budgetPlanningRepository.delete(entity);
+		return new ResponseEntity<BudgetPlanning>(entity, HttpStatus.OK);
 	}
 
 	@Override
@@ -65,12 +67,5 @@ public class BudgetPlanningController implements PersistableEntityController<Bud
 	public ResponseEntity<BudgetPlanning> put(BudgetPlanning entity) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@GetMapping(value = "budgetplanningevaluation")
-	public ResponseEntity<BudgetPlanningEvaluation> evaluateBudgetPlanning(@RequestParam("month") int month,
-			@RequestParam("year") int year) {
-		return new ResponseEntity<BudgetPlanningEvaluation>(bankingService.createBudgetPlanningEvaluation(month, year),
-				HttpStatus.OK);
 	}
 }

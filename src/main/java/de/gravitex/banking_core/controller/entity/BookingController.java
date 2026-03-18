@@ -1,6 +1,7 @@
 package de.gravitex.banking_core.controller.entity;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,7 @@ import de.gravitex.banking.entity.Booking;
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.repository.BookingRepository;
 import de.gravitex.banking_core.service.BankingService;
+import de.gravitex.banking_core.service.DataIntegrityService;
 
 @RestController
 public class BookingController implements PersistableEntityController<Booking> {
@@ -26,6 +29,9 @@ public class BookingController implements PersistableEntityController<Booking> {
 	
 	@Autowired
 	BankingService bankingService;
+	
+	@Autowired
+	private DataIntegrityService integrityService;	
 
 	@PatchMapping(path = "booking", consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Booking> patch(@RequestBody Booking entity) {
@@ -42,8 +48,11 @@ public class BookingController implements PersistableEntityController<Booking> {
 	@Override
 	@DeleteMapping(path = "booking")
 	public ResponseEntity<Booking> delete(@RequestParam("id") Long aEntityId) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<Booking> optional = bookingRepository.findById(aEntityId);		
+		integrityService.assertOptionalPresent(optional, Booking.class);
+		Booking entity = optional.get();
+		bookingRepository.delete(entity);
+		return new ResponseEntity<Booking>(entity, HttpStatus.OK);
 	}
 
 	@Override

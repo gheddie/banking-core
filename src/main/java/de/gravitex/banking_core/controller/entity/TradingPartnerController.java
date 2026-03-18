@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.gravitex.banking.entity.Account;
 import de.gravitex.banking.entity.TradingPartner;
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
 import de.gravitex.banking_core.dto.MergeTradingPartners;
@@ -77,11 +76,5 @@ public class TradingPartnerController implements PersistableEntityController<Tra
 	public ResponseEntity<TradingPartner> put(@RequestBody TradingPartner entity) {
 		tradingPartnerRepository.save(entity);
 		return new ResponseEntity<TradingPartner>(entity, HttpStatus.OK);
-	}
-	
-	@PostMapping(path = "mergetradingpartners")
-	public ResponseEntity<TradingPartnersMergeResult> mergeTradingPartners(@RequestBody MergeTradingPartners aMergetradingPartners) {
-		return new ResponseEntity<TradingPartnersMergeResult>(bankingService.mergeTradingPartners(
-				aMergetradingPartners.getPartnersToMerge(), aMergetradingPartners.getNewTradingKey()), HttpStatus.OK);
 	}
 }

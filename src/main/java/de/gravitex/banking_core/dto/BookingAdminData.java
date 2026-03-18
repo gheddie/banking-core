@@ -1,4 +1,4 @@
-package de.gravitex.banking_core.controller.admin;
+package de.gravitex.banking_core.dto;
 
 import lombok.Data;
 

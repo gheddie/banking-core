@@ -66,7 +66,6 @@ public class CreditInstituteController implements PersistableEntityController<Cr
 		CreditInstitute aCreditInstitute = creditInstituteOptional.get();
 		integrityService.satisfyPotientallyReferenced(PotientallyReferenced.forEntity(aCreditInstitute)
 				.withPotentiallyReferringEntity(Account.class, "creditInstitute")).failForActualReferences();
-		;
 		creditInstituteRepository.delete(aCreditInstitute);
 		return new ResponseEntity<CreditInstitute>(aCreditInstitute, HttpStatus.OK);
 	}

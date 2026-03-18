@@ -1,8 +1,7 @@
-package de.gravitex.banking_core.controller.bookingimport;
+package de.gravitex.banking_core.dto;
 
 import java.util.List;
 
-import de.gravitex.banking_core.dto.BookingFileImportDto;
 import lombok.Data;
 
 @Data

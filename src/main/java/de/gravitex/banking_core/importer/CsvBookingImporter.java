@@ -136,7 +136,7 @@ public abstract class CsvBookingImporter extends BookingImporter {
 		}
 
 		public String getValueByKey(String aKey) throws CsvProcessingMissingAttributeException {
-			if (!mappedValues.containsKey(aKey)) {
+			if (!mappedValues.keySet().contains(aKey)) {
 				throw new CsvProcessingMissingAttributeException(aKey);
 			}
 			String result = StringHelper.debracket(mappedValues.get(aKey));

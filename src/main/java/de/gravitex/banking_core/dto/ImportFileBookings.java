@@ -1,6 +1,5 @@
-package de.gravitex.banking_core.controller.bookingimport;
+package de.gravitex.banking_core.dto;
 
-import de.gravitex.banking_core.dto.BookingFileImportDto;
 import de.gravitex.banking_core.dto.base.BankingDto;
 import lombok.Data;
 

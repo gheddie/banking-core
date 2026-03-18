@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking.entity.Account;
 import de.gravitex.banking_core.controller.entity.base.PersistableEntityController;
-import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.CreditInstituteRepository;
 import de.gravitex.banking_core.service.BankingService;
@@ -78,12 +77,5 @@ public class AccountController implements PersistableEntityController<Account> {
 		bankingService.checkForImportDirectory(account);
 		accountRepository.save(account);
 		return new ResponseEntity<Account>(account, HttpStatus.OK);
-	}
-	
-	@GetMapping(value = "accountinfos")
-	public ResponseEntity<List<AccountInfo>> getAccountinfos() {
-		List<AccountInfo> accountInfos = bankingService.createAccountInfo();
-		return new ResponseEntity<List<AccountInfo>>(
-				accountInfos, HttpStatus.OK);
 	}
 }
