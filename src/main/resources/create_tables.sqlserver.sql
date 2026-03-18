@@ -23,6 +23,7 @@ drop table trading_partner;
 drop table purpose_category;
 drop table budget_planning_item;
 drop table budget_planning;
+drop table recurring_position;
 --views
 drop view booking_view;
 */
@@ -64,9 +65,11 @@ CREATE TABLE trading_partner (
     trading_key varchar(255) not null,
     purpose_category_id BIGINT null,
     recurring_position_id BIGINT null,
+    parent_trading_partner_id BIGINT null,
 	primary key (id),
 	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id),
-	FOREIGN KEY (recurring_position_id) REFERENCES recurring_position(id)	
+	FOREIGN KEY (recurring_position_id) REFERENCES recurring_position(id),
+	FOREIGN KEY (parent_trading_partner_id) REFERENCES trading_partner(id)
 );
 
 CREATE TABLE standing_order (

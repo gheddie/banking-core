@@ -10,11 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.jdbc.Sql;
 
 import de.gravitex.banking.entity.Account;
 import de.gravitex.banking.entity.CreditInstitute;
-
 import de.gravitex.banking.entity.TradingPartner;
 import de.gravitex.banking.enumerated.ImportType;
 import de.gravitex.banking_core.BankingCoreApplication;
@@ -27,7 +25,7 @@ import de.gravitex.banking_core.repository.TradingPartnerRepository;
 @SpringBootTest(
   webEnvironment = SpringBootTest.WebEnvironment.MOCK,
   classes = BankingCoreApplication.class)
-@Sql("/sql/insert_purpose_categories_h2.sql")
+// @Sql("/sql/[some_script_if_needed].sql")
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class BankingServiceTest {
 

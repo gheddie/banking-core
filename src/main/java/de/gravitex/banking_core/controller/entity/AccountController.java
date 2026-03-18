@@ -59,7 +59,7 @@ public class AccountController implements PersistableEntityController<Account> {
 	@DeleteMapping(path = "account")
 	public ResponseEntity<Account> delete(@RequestParam("id") Long accountId) {
 		Optional<Account> accountOptional = accountRepository.findById(accountId);		
-		integrityService.assertOptionalPresent(accountOptional);
+		integrityService.assertOptionalPresent(accountOptional, Account.class);
 		Account account = accountOptional.get();
 		accountRepository.delete(account);
 		return new ResponseEntity<Account>(account, HttpStatus.OK);

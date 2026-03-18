@@ -43,9 +43,11 @@ CREATE TABLE trading_partner (
     trading_key varchar(255) not null,
     purpose_category_id bigint null,
     recurring_position_id BIGINT null,
+    parent_trading_partner_id BIGINT null,
 	primary key (id),
 	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id),
-	FOREIGN KEY (recurring_position_id) REFERENCES recurring_position(id)
+	FOREIGN KEY (recurring_position_id) REFERENCES recurring_position(id),
+	FOREIGN KEY (parent_trading_partner_id) REFERENCES trading_partner(id)
 );
 
 CREATE TABLE standing_order (
@@ -132,3 +134,33 @@ left join purpose_category pc on (pc.id = tp.purpose_category_id)
 left join purpose_category pc_booking on (pc_booking.id = b.purpose_category_id)
 left join booking_import_item bii on (bii.booking_id = b.id)
 left join booking_import bi on (bi.id = bii.booking_import_id);
+
+insert into recurring_position (id, incoming, recurring_interval) values (1, 1, 'MONTHLY');
+
+insert into purpose_category (id, purpose_key) values (1,'Altersvorsorge');
+insert into purpose_category (id, purpose_key) values (2,'Apotheke');
+insert into purpose_category (id, purpose_key) values (3,'Band');
+insert into purpose_category (id, purpose_key) values (4,'Einkauf');
+insert into purpose_category (id, purpose_key) values (5,'Eltern');
+insert into purpose_category (id, purpose_key) values (6,'Essen gehen');
+insert into purpose_category (id, purpose_key) values (7,'Fahrrad');
+insert into purpose_category (id, purpose_key) values (8,'Fast Food');
+insert into purpose_category (id, purpose_key) values (9,'Fitness');
+insert into purpose_category (id, purpose_key) values (10,'Gehalt');
+insert into purpose_category (id, purpose_key) values (11,'Google Play');
+insert into purpose_category (id, purpose_key) values (12,'Kinder');
+insert into purpose_category (id, purpose_key) values (13,'Klamotten');
+insert into purpose_category (id, purpose_key) values (14,'Miete');
+insert into purpose_category (id, purpose_key) values (15,'Parken');
+insert into purpose_category (id, purpose_key) values (16,'Paypal');
+insert into purpose_category (id, purpose_key) values (17,'Rauchen');
+insert into purpose_category (id, purpose_key) values (18,'Rundfunk');
+insert into purpose_category (id, purpose_key) values (19,'Sonstiges');
+insert into purpose_category (id, purpose_key) values (20,'Sparkasse');
+insert into purpose_category (id, purpose_key) values (21,'Spenden');
+insert into purpose_category (id, purpose_key) values (22,'Tanken');
+insert into purpose_category (id, purpose_key) values (23,'Technik');
+insert into purpose_category (id, purpose_key) values (24,'Telefonie/Internet');
+insert into purpose_category (id, purpose_key) values (25,'Unterhalt');
+insert into purpose_category (id, purpose_key) values (26,'Versicherung');
+insert into purpose_category (id, purpose_key) values (27,'Urlaub');

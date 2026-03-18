@@ -1,14 +1,18 @@
 package de.gravitex.banking_core.repository.util;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import de.gravitex.banking.entity.Booking;
 import de.gravitex.banking.entity.base.IdEntity;
 import de.gravitex.banking_core.exception.ReferingEntitiesException;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.ManagedType;
 
 public class PotientallyReferenced {
-
+	
 	private IdEntity entity;
 	
 	private List<PotentiallyReferingEntity> potentiallyReferringEntites = new ArrayList<>();
@@ -60,5 +64,19 @@ public class PotientallyReferenced {
 			}
 		}
 		return new ArrayList<>();		
+	}
+
+	@SuppressWarnings("unchecked")
+	public PotientallyReferenced autoDetectPotentiallyReferrings(Set<EntityType<?>> aEntityTypes) {
+		for (ManagedType<?> aManagedType : aEntityTypes) {
+			Class<?> clazz = aManagedType.getJavaType();
+			for (Field aField : clazz.getDeclaredFields()) {
+				Class<?> fieldClass = aField.getType();
+				if (fieldClass.equals(entity.getClass())) {
+					withPotentiallyReferringEntity((Class<? extends IdEntity>) clazz, aField.getName());
+				}
+			}			
+		}			
+		return this;
 	}
 }

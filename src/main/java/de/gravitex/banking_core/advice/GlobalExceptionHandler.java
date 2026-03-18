@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import de.gravitex.banking_core.dto.MergeTradingPartners;
+import de.gravitex.banking_core.exception.AttachRecurringPositionException;
 import de.gravitex.banking_core.exception.BookingImportException;
 import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
@@ -64,6 +64,11 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(MergeTradingPartnersException.class)
 	public ResponseEntity<String> handleException(MergeTradingPartnersException aException) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
+	}
+	
+	@ExceptionHandler(AttachRecurringPositionException.class)
+	public ResponseEntity<String> handleException(AttachRecurringPositionException aException) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
 	}
 }
