@@ -365,6 +365,10 @@ public class BankingService {
 		if (aTradingPartners == null || aTradingPartners.isEmpty()) {
 			throw new MergeTradingPartnersException("no trading partners provided to merge!!!");
 		}
+		
+		if (!(aTradingPartners.size() > 1)) {
+			throw new MergeTradingPartnersException("at least 2 trading partners must be provided to merge!!!");
+		}
 
 		if (StringHelper.isBlank(newTradingKey)) {
 			throw new MergeTradingPartnersException("new trading key must be provided!!!");
