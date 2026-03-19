@@ -36,6 +36,8 @@ import de.gravitex.banking.enumerated.ImportType;
 import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.dto.BookingFileImportDto;
 import de.gravitex.banking_core.dto.BookingImportSummary;
+import de.gravitex.banking_core.dto.BookingOverview;
+import de.gravitex.banking_core.dto.BookingOverviewTradingKey;
 import de.gravitex.banking_core.dto.BookingProgress;
 import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
 import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
@@ -559,4 +561,28 @@ public class BankingService {
     private void postConstruct() {    	
 		databaseInfo = new DatabaseAdministrator().getDatabaseInfoForDriverClass(databaseDriverClass);
     }
+
+	public BookingOverview createBookingOverview(Account account, LocalDate aFromDate, LocalDate aUntilDate) {
+		
+		BookingOverview bookingOverview = new BookingOverview();
+		List<Booking> bookings = bookingRepository.findBookingsByAccountInRange(aFromDate, aUntilDate, account);
+		logger.info("found {" + bookings.size() + "} bookings for creating overview for account {" + account.getName()
+				+ "} in range {" + aFromDate + "-" + aUntilDate + "}...");
+		Map<String, BookingOverviewTradingKey> bookingsByTradingKey = new HashMap<>();
+		for (Booking aBooking : bookings) {
+			String tradingKey = aBooking.getTradingPartner().getTradingKey();
+			if (bookingsByTradingKey.get(tradingKey) == null) {
+				BookingOverviewTradingKey bot = new BookingOverviewTradingKey();
+				bot.setTradingKey(tradingKey);
+				bookingsByTradingKey.put(tradingKey, bot);
+			}
+			bookingsByTradingKey.get(tradingKey).addBooking(aBooking);
+		}		
+		List<BookingOverviewTradingKey> list = new ArrayList<>();
+		for (String tradingKey : bookingsByTradingKey.keySet()) {
+			list.add(bookingsByTradingKey.get(tradingKey).finish());
+		}
+		bookingOverview.setBookingOverviewTradingKeys(list);		
+		return bookingOverview;
+	}
 }
