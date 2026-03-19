@@ -77,6 +77,15 @@ CREATE TABLE booking (
 	FOREIGN KEY (purpose_category_id) REFERENCES purpose_category(id)
 );
 
+CREATE TABLE trading_partner_booking_history (
+	id bigint,
+	trading_partner_id bigint not null,
+	booking_id bigint not null,
+	primary key (id),
+	FOREIGN KEY (trading_partner_id) REFERENCES trading_partner(id),
+	FOREIGN KEY (booking_id) REFERENCES booking(id)
+);
+
 CREATE TABLE booking_import (
 	id bigint,
 	file_name varchar(255) not null,

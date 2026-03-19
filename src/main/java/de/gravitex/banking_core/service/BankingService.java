@@ -31,6 +31,7 @@ import de.gravitex.banking.entity.BudgetPlanning;
 import de.gravitex.banking.entity.BudgetPlanningItem;
 import de.gravitex.banking.entity.PurposeCategory;
 import de.gravitex.banking.entity.TradingPartner;
+import de.gravitex.banking.entity.TradingPartnerBookingHistory;
 import de.gravitex.banking.enumerated.ImportType;
 import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.dto.BookingFileImportDto;
@@ -52,6 +53,7 @@ import de.gravitex.banking_core.repository.BookingImportRepository;
 import de.gravitex.banking_core.repository.BookingRepository;
 import de.gravitex.banking_core.repository.BudgetPlanningRepository;
 import de.gravitex.banking_core.repository.PurposeCategoryRepository;
+import de.gravitex.banking_core.repository.TradingPartnerBookingHistoryRepository;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
 import de.gravitex.banking_core.repository.util.PotientallyReferenced;
 import de.gravitex.banking_core.service.util.BookingProgressByTradingKey;
@@ -92,6 +94,9 @@ public class BankingService {
 
 	@Autowired
 	private PurposeCategoryRepository purposeCategoryRepository;
+	
+	@Autowired
+	private TradingPartnerBookingHistoryRepository tradingPartnerBookingHistoryRepository;
 
 	@Autowired
 	DataIntegrityService integrityService;
@@ -369,6 +374,10 @@ public class BankingService {
 
 		Set<Long> existingPurposeCategoryIds = new HashSet<>();
 		for (TradingPartner aTradingPartner : aTradingPartners) {
+			if (aTradingPartner.getRecurringPosition() != null) {
+				throw new MergeTradingPartnersException(
+						"no trading partners with a recurring position set {" + aTradingPartner + "} can be merged!!!");
+			}
 			if (aTradingPartner.getParentTradingPartner() != null) {
 				throw new MergeTradingPartnersException(
 						"only top level trading partners can be merged (not a top level trading partner --> {"
@@ -394,9 +403,10 @@ public class BankingService {
 				determinePurposeCategory(existingPurposeCategoryIds));
 		mergeTradingPartners.setNewTradingPartner(newTradingPartner);
 		for (Booking aBookingToSwitch : bookingsToSwitch) {
+			historize(aBookingToSwitch);
 			aBookingToSwitch.setTradingPartner(newTradingPartner);
 			bookingRepository.save(aBookingToSwitch);
-			mergeTradingPartners.addSwitchedBooking(aBookingToSwitch);
+			mergeTradingPartners.addSwitchedBooking(aBookingToSwitch);			
 		}
 		// reparent given trading partners
 		for (TradingPartner aTradingPartner : aTradingPartners) {
@@ -405,6 +415,13 @@ public class BankingService {
 		}
 
 		return mergeTradingPartners;
+	}
+
+	private void historize(Booking aBooking) {
+		TradingPartnerBookingHistory history = new TradingPartnerBookingHistory();
+		history.setBooking(aBooking);
+		history.setTradingPartner(aBooking.getTradingPartner());
+		tradingPartnerBookingHistoryRepository.save(history);
 	}
 
 	private PurposeCategory determinePurposeCategory(Set<Long> existingPurposeCategoryIds) {
