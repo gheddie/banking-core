@@ -1,5 +1,8 @@
 package de.gravitex.banking_core.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StringHelper {
 
 	private static final String BRACKET = "\"";
@@ -53,5 +56,13 @@ public class StringHelper {
 			return aValue.substring(0, aMaxLength);
 		}
 		return aValue;
+	}
+
+	public static List<String> getIterations(String aValue, int aLength) {
+		List<String> result = new ArrayList<>();
+		for (int i=0;i<=aValue.length()-aLength;i++) {
+			result.add(aValue.substring(i, i+aLength));
+		}		
+		return result;
 	}
 }

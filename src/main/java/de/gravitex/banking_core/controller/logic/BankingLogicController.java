@@ -15,20 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.gravitex.banking.entity.Account;
 import de.gravitex.banking.entity.BookingImport;
+import de.gravitex.banking.entity.TradingPartner;
 import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.dto.BookingAdminData;
-import de.gravitex.banking_core.dto.BookingFileImportDto;
+import de.gravitex.banking_core.dto.BookingCurrent;
 import de.gravitex.banking_core.dto.BookingImportSummary;
 import de.gravitex.banking_core.dto.BookingOverview;
 import de.gravitex.banking_core.dto.BookingProgress;
 import de.gravitex.banking_core.dto.BudgetPlanningDto;
 import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
-import de.gravitex.banking_core.dto.ImportBookings;
 import de.gravitex.banking_core.dto.MergeTradingPartners;
 import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
 import de.gravitex.banking_core.dto.UnprocessedBookingImport;
 import de.gravitex.banking_core.repository.AccountRepository;
 import de.gravitex.banking_core.repository.BookingImportRepository;
+import de.gravitex.banking_core.repository.TradingPartnerRepository;
 import de.gravitex.banking_core.service.BankingService;
 import de.gravitex.banking_core.service.BudgetPlanningService;
 import de.gravitex.banking_core.service.DataIntegrityService;
@@ -38,9 +39,6 @@ public class BankingLogicController {
 
 	@Value("${spring.datasource.username}")
 	private String datasourceName;
-
-	@Value("${import.rootdir}")
-	private String importRoot;
 
 	@Value("${spring.datasource.url}")
 	private String databaseUrl;
@@ -62,12 +60,14 @@ public class BankingLogicController {
 
 	@Autowired
 	private BudgetPlanningService budgetPlanningService;
+	
+	@Autowired
+	private TradingPartnerRepository tradingPartnerRepository;
 
 	@GetMapping(value = "bookingadmindata")
 	public BookingAdminData getAdminData() {
 		BookingAdminData bookingAdminData = new BookingAdminData();
 		bookingAdminData.setDatasourceName(datasourceName);
-		bookingAdminData.setImportRoot(importRoot);
 		bookingAdminData.setDatabaseUrl(databaseUrl);
 		bookingAdminData.setDatabaseDriverClass(databaseDriverClass);
 		return bookingAdminData;
@@ -97,16 +97,6 @@ public class BankingLogicController {
 			@RequestParam("year") int year) {
 		return new ResponseEntity<BudgetPlanningEvaluation>(bankingService.createBudgetPlanningEvaluation(month, year),
 				HttpStatus.OK);
-	}
-
-	@GetMapping(path = "importbookings")
-	public ResponseEntity<ImportBookings> importBookings(@RequestParam("accountId") Long accountId) {
-		Optional<Account> accountOptional = accountRepository.findById(accountId);
-		integrityService.assertOptionalPresent(accountOptional, Account.class);
-		List<BookingFileImportDto> importedBookings = bankingService.importBookingsForAccount(accountOptional.get());
-		ImportBookings dto = new ImportBookings();
-		dto.setImportedBookingFiles(importedBookings);
-		return new ResponseEntity<ImportBookings>(dto, HttpStatus.OK);
 	}
 
 	@GetMapping(path = "importfilebookings")
@@ -150,5 +140,15 @@ public class BankingLogicController {
 		createdOverview.setFromDate(aBookingOverview.getFromDate());
 		createdOverview.setUntilDate(aBookingOverview.getUntilDate());
 		return new ResponseEntity<BookingOverview>(createdOverview, HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "bookingcurrent")
+	public ResponseEntity<BookingCurrent> createBookingCurrent(@RequestBody BookingCurrent aBookingCurrent) {
+		
+		Optional<TradingPartner> tradingPartnerOptional = tradingPartnerRepository
+				.findById(aBookingCurrent.getTradingPartner().getId());
+		integrityService.assertOptionalPresent(tradingPartnerOptional, TradingPartner.class);
+		BookingCurrent createdBookingCurrent = bankingService.createBookingCurrent(tradingPartnerOptional.get());
+		return new ResponseEntity<BookingCurrent>(createdBookingCurrent, HttpStatus.OK);
 	}
 }

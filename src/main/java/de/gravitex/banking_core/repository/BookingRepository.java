@@ -23,10 +23,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	List<Booking> findByPurposeCategory(PurposeCategory aPurposeCategory);
 
 	List<Booking> findByTradingPartner(TradingPartner aTradingPartner);
+	
+	List<Booking> findByTradingPartnerOrderByBookingDateAsc(TradingPartner aTradingPartner);
 
 	@Query("select b from Booking b where (bookingDate >= :aFrom or bookingDate = :aFrom) and (bookingDate <= :aTo or bookingDate = :aTo)")
 	List<Booking> findBookingsInRange(LocalDate aFrom, LocalDate aTo);
 
 	@Query("select b from Booking b where (bookingDate >= :aFrom or bookingDate = :aFrom) and (bookingDate <= :aTo or bookingDate = :aTo) and account = :account")
 	List<Booking> findBookingsByAccountInRange(LocalDate aFrom, LocalDate aTo, Account account);
+	
+	@Query("select b from Booking b where (bookingDate >= :aFrom or bookingDate = :aFrom) and (bookingDate <= :aTo or bookingDate = :aTo) and tradingPartner = :aTradingPartner")
+	List<Booking> findBookingsByTradingPartnerInRange(LocalDate aFrom, LocalDate aTo, TradingPartner aTradingPartner);	
 }

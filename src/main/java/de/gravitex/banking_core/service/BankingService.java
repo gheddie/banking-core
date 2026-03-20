@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.postgresql.core.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ import de.gravitex.banking.entity.TradingPartner;
 import de.gravitex.banking.entity.TradingPartnerBookingHistory;
 import de.gravitex.banking.enumerated.ImportType;
 import de.gravitex.banking_core.dto.AccountInfo;
+import de.gravitex.banking_core.dto.BookingCurrent;
+import de.gravitex.banking_core.dto.BookingCurrentItem;
 import de.gravitex.banking_core.dto.BookingFileImportDto;
 import de.gravitex.banking_core.dto.BookingImportSummary;
 import de.gravitex.banking_core.dto.BookingOverview;
@@ -58,8 +61,10 @@ import de.gravitex.banking_core.repository.PurposeCategoryRepository;
 import de.gravitex.banking_core.repository.TradingPartnerBookingHistoryRepository;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
 import de.gravitex.banking_core.repository.util.PotientallyReferenced;
+import de.gravitex.banking_core.service.util.BookingCurrentModel;
 import de.gravitex.banking_core.service.util.BookingProgressByTradingKey;
 import de.gravitex.banking_core.service.util.ImportDescriptor;
+import de.gravitex.banking_core.service.util.LocalDateFromStringParser;
 import de.gravitex.banking_core.service.util.LocalDateRange;
 import de.gravitex.banking_core.service.util.ShortestBookingInterval;
 import de.gravitex.banking_core.util.DateUtil;
@@ -110,23 +115,6 @@ public class BankingService {
 	static {
 		IMPORTERS.put(ImportType.CSV_VB, new VolksbankCsvBookingImporter());
 		IMPORTERS.put(ImportType.CSV_KSK, new KreisSparKasseCsvBookingImporter());
-	}
-
-	public void importBookings() {
-		checkImportRoot();
-		logger.info("importing all bookings [" + databaseInfo.getImportRootDirectory() + "]...");
-		for (Account account : accountRepository.findAll()) {
-			importBookingsForAccount(account);
-		}
-	}
-
-	public List<BookingFileImportDto> importBookingsForAccount(Account account) {
-		checkImportRoot();
-		ImportDescriptor importDescriptor = getImportDescriptor(account);
-		String importPath = importDescriptor.buildImportPath();
-		logger.info("importing bookings for account [" + account + "] --> Pfad: " + importPath + " ["
-				+ account.getCreditInstitute().getImportType() + "]");
-		return importFiles(importPath, account, importDescriptor);
 	}
 
 	private void checkImportRoot() {
@@ -519,6 +507,7 @@ public class BankingService {
 	}
 
 	public List<UnprocessedBookingImport> getUnprocessedBookingImports(Account account) {
+		LocalDateFromStringParser parser = new LocalDateFromStringParser();
 		String importPath = getImportDescriptor(account).buildImportPath();
 		File[] list = new File(importPath).listFiles();
 		List<UnprocessedBookingImport> result = new ArrayList<>();
@@ -527,7 +516,8 @@ public class BankingService {
 				continue;
 			}
 			UnprocessedBookingImport unprocessed = new UnprocessedBookingImport();
-			unprocessed.setBookingFileName(aFile.getName());
+			unprocessed.setBookingFileName(aFile.getName());			
+			unprocessed.setFileDate(parser.parseDate(aFile.getName()));
 			result.add(unprocessed);
 		}		
 		return result;
@@ -598,5 +588,29 @@ public class BankingService {
 		}
 		bookingOverview.setBookingOverviewTradingKeys(list);		
 		return bookingOverview;
+	}
+
+	public BookingCurrent createBookingCurrent(TradingPartner aTradingPartner) {				
+		
+		BookingCurrent bookingCurrent = new BookingCurrent();
+		bookingCurrent.setTradingPartner(aTradingPartner);
+		
+		List<Booking> bookings = bookingRepository.findByTradingPartnerOrderByBookingDateAsc(aTradingPartner);
+		
+		LocalDate aDateFrom = bookings.get(0).getBookingDate();
+		LocalDate aDateUntil = bookings.get(bookings.size() - 1).getBookingDate();
+		
+		bookingCurrent.setFromDate(aDateFrom);		
+		bookingCurrent.setUntilDate(aDateUntil);					
+		
+		BookingCurrentModel model = new BookingCurrentModel();
+		model.initForRange(aDateFrom, aDateUntil);
+		for (Booking aBooking : bookings) {
+			model.accept(aBooking.getBookingDate(), aBooking.getAmount());
+		}
+		
+		bookingCurrent.setItems(model.getItemsSorted(true));
+		
+		return bookingCurrent;
 	}
 }

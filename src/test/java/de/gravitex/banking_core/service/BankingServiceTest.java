@@ -61,7 +61,7 @@ public class BankingServiceTest {
 		account.setIdentifier("VOBA_GIRO");
 		accountRepository.save(account);	
 		
-		bankingService.importBookingsForAccount(account);
+		// bankingService.importBookingsForAccount(account);
 		
 		assertEquals(237, bookingRepository.findAll().size());
     }
@@ -83,7 +83,7 @@ public class BankingServiceTest {
 		account.setIdentifier("KSK_GIRO");
 		accountRepository.save(account);	
 		
-		bankingService.importBookingsForAccount(account);
+		// bankingService.importBookingsForAccount(account);
 		
 		assertEquals(98, bookingRepository.findAll().size());
     }
@@ -105,7 +105,7 @@ public class BankingServiceTest {
 		account.setIdentifier("VOBA_GIRO");
 		accountRepository.save(account);	
 		
-		bankingService.importBookingsForAccount(account);
+		// bankingService.importBookingsForAccount(account);
 		
 		int tradingPartnerCount = tradingPartnerRepository.findAll().size();
     	

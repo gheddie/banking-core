@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.gravitex.banking_core.util.db.info.H2DatabaseTypeInfo;
+import de.gravitex.banking_core.util.db.info.PostGresqlDatabaseTypeInfo;
 import de.gravitex.banking_core.util.db.info.SqlServerDatabaseTypeInfo;
 import de.gravitex.banking_core.util.db.info.base.DatabaseTypeInfo;
 
@@ -13,6 +14,7 @@ public class DatabaseAdministrator {
 	static {
 		DB_INFOS.put("com.microsoft.sqlserver.jdbc.SQLServerDriver", new SqlServerDatabaseTypeInfo());
 		DB_INFOS.put("org.h2.Driver", new H2DatabaseTypeInfo());
+		DB_INFOS.put("org.postgresql.Driver", new PostGresqlDatabaseTypeInfo());
 	}
 
 	public DatabaseTypeInfo getDatabaseInfoForDriverClass(String databaseDriverClass) {

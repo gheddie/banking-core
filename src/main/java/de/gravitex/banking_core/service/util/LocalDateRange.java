@@ -27,7 +27,7 @@ public class LocalDateRange {
 		return new LocalDateRange(aFromDate, aUntilDate);
 	}
 
-	private static LocalDateRange forActualMonth() {		
+	public static LocalDateRange forActualMonth() {		
 		return forDates(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()),
 				LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
 	}
