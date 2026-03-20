@@ -16,7 +16,7 @@ public class H2DatabaseTypeInfo extends DatabaseTypeInfo {
 
 	@Override
 	public String getImportRootDirectory() {
-		return "C:\\tmp\\testbankingimportroot";		
+		return ".\\testbankingimportroot";		
 	}
 
 	@Override
