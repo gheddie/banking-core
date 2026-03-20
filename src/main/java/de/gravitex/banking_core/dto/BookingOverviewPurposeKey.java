@@ -14,11 +14,11 @@ import de.gravitex.banking_core.dto.base.BankingDto;
 import lombok.Data;
 
 @Data
-public class BookingOverviewTradingKey extends BankingDto {
+public class BookingOverviewPurposeKey extends BankingDto {
 
 	private List<Booking> bookings = new ArrayList<Booking>();
 	
-	private String tradingKey;
+	private String purposeKey;
 	
 	private int bookingCount;
 	
@@ -32,7 +32,7 @@ public class BookingOverviewTradingKey extends BankingDto {
 	}
 
 	@JsonIgnore
-	public BookingOverviewTradingKey finish() {
+	public BookingOverviewPurposeKey finish() {
 		for (Booking aBooking : bookings) {
 			totalSum = totalSum.add(aBooking.getAmount());
 		}

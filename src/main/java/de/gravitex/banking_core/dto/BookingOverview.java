@@ -16,5 +16,5 @@ public class BookingOverview extends BankingDto {
 	
 	private LocalDate untilDate;
 	
-	private List<BookingOverviewTradingKey> bookingOverviewTradingKeys;
+	private List<BookingOverviewPurposeKey> bookingOverviewTradingKeys;
 }

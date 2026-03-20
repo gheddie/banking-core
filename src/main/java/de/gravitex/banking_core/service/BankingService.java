@@ -37,7 +37,7 @@ import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.dto.BookingFileImportDto;
 import de.gravitex.banking_core.dto.BookingImportSummary;
 import de.gravitex.banking_core.dto.BookingOverview;
-import de.gravitex.banking_core.dto.BookingOverviewTradingKey;
+import de.gravitex.banking_core.dto.BookingOverviewPurposeKey;
 import de.gravitex.banking_core.dto.BookingProgress;
 import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
 import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
@@ -60,6 +60,7 @@ import de.gravitex.banking_core.repository.TradingPartnerRepository;
 import de.gravitex.banking_core.repository.util.PotientallyReferenced;
 import de.gravitex.banking_core.service.util.BookingProgressByTradingKey;
 import de.gravitex.banking_core.service.util.ImportDescriptor;
+import de.gravitex.banking_core.service.util.LocalDateRange;
 import de.gravitex.banking_core.service.util.ShortestBookingInterval;
 import de.gravitex.banking_core.util.DateUtil;
 import de.gravitex.banking_core.util.StringHelper;
@@ -562,25 +563,38 @@ public class BankingService {
 		databaseInfo = new DatabaseAdministrator().getDatabaseInfoForDriverClass(databaseDriverClass);
     }
 
-	public BookingOverview createBookingOverview(Account account, LocalDate aFromDate, LocalDate aUntilDate) {
-		
-		BookingOverview bookingOverview = new BookingOverview();
-		List<Booking> bookings = bookingRepository.findBookingsByAccountInRange(aFromDate, aUntilDate, account);
+	public BookingOverview createBookingOverview(Account account, LocalDate aDateFrom, LocalDate aDateUntil) {		
+		BookingOverview bookingOverview = new BookingOverview();		
+		LocalDateRange dateRange = LocalDateRange.forDates(aDateFrom, aDateUntil);		
+		List<Booking> bookings = bookingRepository.findBookingsByAccountInRange(dateRange.getFromDate(),
+				dateRange.getUntilDate(), account);
 		logger.info("found {" + bookings.size() + "} bookings for creating overview for account {" + account.getName()
-				+ "} in range {" + aFromDate + "-" + aUntilDate + "}...");
-		Map<String, BookingOverviewTradingKey> bookingsByTradingKey = new HashMap<>();
+				+ "} in range {" + dateRange.getFromDate() + "-" + dateRange.getUntilDate() + "}...");
+		Map<String, BookingOverviewPurposeKey> bookingsByPurposeKey = new HashMap<>();
+		BookingOverviewPurposeKey unassignedPurpose = new BookingOverviewPurposeKey();
+		boolean unassignedFound = false;
 		for (Booking aBooking : bookings) {
-			String tradingKey = aBooking.getTradingPartner().getTradingKey();
-			if (bookingsByTradingKey.get(tradingKey) == null) {
-				BookingOverviewTradingKey bot = new BookingOverviewTradingKey();
-				bot.setTradingKey(tradingKey);
-				bookingsByTradingKey.put(tradingKey, bot);
+			PurposeCategory purposeCategory = aBooking.getTradingPartner().getPurposeCategory();
+			if (purposeCategory != null) {
+				String purposeKey = purposeCategory.getPurposeKey();
+				if (bookingsByPurposeKey.get(purposeKey) == null) {
+					BookingOverviewPurposeKey bot = new BookingOverviewPurposeKey();
+					bot.setPurposeKey(purposeKey);
+					bookingsByPurposeKey.put(purposeKey, bot);
+				}
+				bookingsByPurposeKey.get(purposeKey).addBooking(aBooking);				
+			} else {
+				// nicht zugeordnet
+				unassignedFound = true;
+				unassignedPurpose.addBooking(aBooking);
 			}
-			bookingsByTradingKey.get(tradingKey).addBooking(aBooking);
 		}		
-		List<BookingOverviewTradingKey> list = new ArrayList<>();
-		for (String tradingKey : bookingsByTradingKey.keySet()) {
-			list.add(bookingsByTradingKey.get(tradingKey).finish());
+		List<BookingOverviewPurposeKey> list = new ArrayList<>();
+		for (String tradingKey : bookingsByPurposeKey.keySet()) {
+			list.add(bookingsByPurposeKey.get(tradingKey).finish());
+		}
+		if (unassignedFound) {
+			list.add(unassignedPurpose.finish());
 		}
 		bookingOverview.setBookingOverviewTradingKeys(list);		
 		return bookingOverview;
