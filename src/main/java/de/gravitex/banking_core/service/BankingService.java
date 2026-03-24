@@ -6,11 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,10 +44,10 @@ import de.gravitex.banking_core.dto.RecurringPositionProposal;
 import de.gravitex.banking_core.dto.TradingPartnerRecurringPositionProposal;
 import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
 import de.gravitex.banking_core.dto.UnprocessedBookingImport;
-import de.gravitex.banking_core.exception.AttachRecurringPositionException;
 import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
 import de.gravitex.banking_core.exception.MergeTradingPartnersException;
+import de.gravitex.banking_core.exception.RecurringPositionException;
 import de.gravitex.banking_core.exception.RecurringPositionProposalException;
 import de.gravitex.banking_core.importer.KreisSparKasseCsvBookingImporter;
 import de.gravitex.banking_core.importer.VolksbankCsvBookingImporter;
@@ -70,7 +68,6 @@ import de.gravitex.banking_core.service.util.BookingProgressByTradingKey;
 import de.gravitex.banking_core.service.util.ImportDescriptor;
 import de.gravitex.banking_core.service.util.LocalDateFromStringParser;
 import de.gravitex.banking_core.service.util.LocalDateRange;
-import de.gravitex.banking_core.service.util.ShortestBookingInterval;
 import de.gravitex.banking_core.service.util.recurringposition.RecurringPositionLookup;
 import de.gravitex.banking_core.util.DateUtil;
 import de.gravitex.banking_core.util.StringHelper;
@@ -439,53 +436,11 @@ public class BankingService {
 		if (aTradingPartner.getRecurringPosition() == null) {
 			return;
 		}
-		List<Booking> bookings = bookingRepository.findByTradingPartner(aTradingPartner);
-		if (bookings == null || bookings.isEmpty()) {
-			return;
+		if (!isRecurringPositionSuitable(aTradingPartner, aTradingPartner.getRecurringPosition())) {
+			throw new RecurringPositionException(
+					"cannot attach recurring position {" + aTradingPartner.getRecurringPosition()
+							+ "} to trading partner {" + aTradingPartner.getTradingKey() + "}!!!");
 		}
-		Map<LocalDate, List<Booking>> byDate = new HashMap<>();
-		for (Booking aBooking : bookings) {
-			if (aBooking.getAmount().compareTo(BigDecimal.ZERO) > 0
-					&& !aTradingPartner.getRecurringPosition().isIncoming()) {
-				throw new AttachRecurringPositionException(aTradingPartner,
-						"unsuitable amount (" + aBooking.getAmount() + ") detected!!!");
-			}
-			if (aBooking.getAmount().compareTo(BigDecimal.ZERO) < 0
-					&& aTradingPartner.getRecurringPosition().isIncoming()) {
-				throw new AttachRecurringPositionException(aTradingPartner,
-						"unsuitable amount (" + aBooking.getAmount() + ") detected!!!");
-			}
-			if (byDate.get(aBooking.getBookingDate()) == null) {
-				byDate.put(aBooking.getBookingDate(), new ArrayList<>());
-			}
-			byDate.get(aBooking.getBookingDate()).add(aBooking);
-		}
-		ShortestBookingInterval shortestInterval = findShortestIntervalBetweenBookingDates(byDate.keySet());
-		System.out.println("shortestInterval --> " + shortestInterval);
-		if (shortestInterval.getDaySpan() < aTradingPartner.getRecurringPosition().getRecurringInterval()
-				.getShortestIntervalAccepted()) {
-			throw new AttachRecurringPositionException(aTradingPartner, shortestInterval);
-		}
-	}
-
-	private ShortestBookingInterval findShortestIntervalBetweenBookingDates(Set<LocalDate> aLocalDates) {
-		List<LocalDate> datesList = new ArrayList<>(aLocalDates);
-		Collections.sort(datesList);
-		ShortestBookingInterval shortestInterval = new ShortestBookingInterval(Long.MAX_VALUE, null, null);
-		for (int i = 0; i < datesList.size() - 1; i++) {
-			LocalDate aDate1 = datesList.get(i);
-			LocalDate aDate2 = datesList.get(i + 1);
-			long daysBetween = getDaysBetween(aDate1, aDate2);
-			System.out.println(daysBetween + " days between {" + aDate1 + "-" + aDate2 + "}...");
-			if (daysBetween < shortestInterval.getDaySpan()) {
-				shortestInterval = new ShortestBookingInterval(daysBetween, aDate1, aDate2);
-			}
-		}
-		return shortestInterval;
-	}
-
-	private long getDaysBetween(LocalDate aDate1, LocalDate aDate2) {
-		return ChronoUnit.DAYS.between(aDate1, aDate2);
 	}
 
 	public BookingProgress createBookingProgress(BookingProgress aBookingProgress) {
@@ -629,8 +584,7 @@ public class BankingService {
 					.findByTradingPartnerOrderByBookingDateAsc(aTradingPartner);
 			List<RecurringPosition> suitables = new ArrayList<>();
 			for (RecurringPosition aRecurringPosition : prepareRecurringPositions(recurringPositions, bookingsByTradingPartner)) {				
-				boolean suitable = isRecurringPositionSuitable(aTradingPartner, aRecurringPosition,
-						bookingsByTradingPartner);
+				boolean suitable = isRecurringPositionSuitable(aTradingPartner, aRecurringPosition);
 				if (suitable) {
 					System.out.println(aTradingPartner.getTradingKey() + " --> " + aRecurringPosition + " [SUITABLE]");					
 					suitables.add(aRecurringPosition);
@@ -701,9 +655,10 @@ public class BankingService {
 		return aBooking.getAmount().compareTo(BigDecimal.ZERO) >= 0;
 	}
 
-	public boolean isRecurringPositionSuitable(TradingPartner aTradingPartner, RecurringPosition aRecurringPosition,
-			List<Booking> aBookingsByTradingPartner) {
+	public boolean isRecurringPositionSuitable(TradingPartner aTradingPartner, RecurringPosition aRecurringPosition) {
 
-		return new RecurringPositionLookup(aBookingsByTradingPartner, aRecurringPosition.getRecurringInterval()).isSuitable();
+		List<Booking> bookingsByTradingPartner = bookingRepository
+				.findByTradingPartnerOrderByBookingDateAsc(aTradingPartner);
+		return new RecurringPositionLookup(bookingsByTradingPartner, aRecurringPosition.getRecurringInterval()).isSuitable();
 	}
 }

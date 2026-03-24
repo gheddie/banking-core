@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import de.gravitex.banking_core.exception.AttachRecurringPositionException;
+import de.gravitex.banking_core.exception.RecurringPositionException;
 import de.gravitex.banking_core.exception.BookingImportException;
 import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
@@ -67,8 +67,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
 	}
 	
-	@ExceptionHandler(AttachRecurringPositionException.class)
-	public ResponseEntity<String> handleException(AttachRecurringPositionException aException) {
+	@ExceptionHandler(RecurringPositionException.class)
+	public ResponseEntity<String> handleException(RecurringPositionException aException) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(aException.getMessage());
 	}
 }
