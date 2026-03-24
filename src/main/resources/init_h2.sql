@@ -33,7 +33,7 @@ CREATE TABLE purpose_category (
 
 CREATE TABLE recurring_position (
     id BIGINT,
-    incoming bit not null,
+    incoming bool not null,
 	recurring_interval varchar(32) not null,
 	primary key (id)
 );
@@ -146,6 +146,12 @@ left join booking_import bi on (bi.id = bii.booking_import_id);
 
 insert into recurring_position (id, incoming, recurring_interval) values (1, 1, 'MONTHLY');
 insert into recurring_position (id, incoming, recurring_interval) values (2, 0, 'MONTHLY');
+insert into recurring_position (id, incoming, recurring_interval) values (3, 1, 'QUARTERLY');
+insert into recurring_position (id, incoming, recurring_interval) values (4, 0, 'QUARTERLY');
+insert into recurring_position (id, incoming, recurring_interval) values (5, 1, 'HALF_YEARLY');
+insert into recurring_position (id, incoming, recurring_interval) values (6, 0, 'HALF_YEARLY');
+insert into recurring_position (id, incoming, recurring_interval) values (7, 1, 'YEARLY');
+insert into recurring_position (id, incoming, recurring_interval) values (8, 0, 'YEARLY');
 
 insert into purpose_category (id, purpose_key) values (1,'Altersvorsorge');
 insert into purpose_category (id, purpose_key) values (2,'Apotheke');

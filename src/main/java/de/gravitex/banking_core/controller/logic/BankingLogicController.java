@@ -25,6 +25,7 @@ import de.gravitex.banking_core.dto.BookingProgress;
 import de.gravitex.banking_core.dto.BudgetPlanningDto;
 import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
 import de.gravitex.banking_core.dto.MergeTradingPartners;
+import de.gravitex.banking_core.dto.RecurringPositionProposal;
 import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
 import de.gravitex.banking_core.dto.UnprocessedBookingImport;
 import de.gravitex.banking_core.repository.AccountRepository;
@@ -60,7 +61,7 @@ public class BankingLogicController {
 
 	@Autowired
 	private BudgetPlanningService budgetPlanningService;
-	
+
 	@Autowired
 	private TradingPartnerRepository tradingPartnerRepository;
 
@@ -141,14 +142,22 @@ public class BankingLogicController {
 		createdOverview.setUntilDate(aBookingOverview.getUntilDate());
 		return new ResponseEntity<BookingOverview>(createdOverview, HttpStatus.OK);
 	}
-	
+
 	@PostMapping(path = "bookingcurrent")
 	public ResponseEntity<BookingCurrent> createBookingCurrent(@RequestBody BookingCurrent aBookingCurrent) {
-		
+
 		Optional<TradingPartner> tradingPartnerOptional = tradingPartnerRepository
 				.findById(aBookingCurrent.getTradingPartner().getId());
 		integrityService.assertOptionalPresent(tradingPartnerOptional, TradingPartner.class);
 		BookingCurrent createdBookingCurrent = bankingService.createBookingCurrent(tradingPartnerOptional.get());
 		return new ResponseEntity<BookingCurrent>(createdBookingCurrent, HttpStatus.OK);
+	}
+
+	@PostMapping(path = "recurringpositionproposal")
+	public ResponseEntity<RecurringPositionProposal> createRecurringPositionProposal(
+			@RequestBody RecurringPositionProposal aRecurringPositionProposal) {
+		return new ResponseEntity<RecurringPositionProposal>(
+				bankingService.createRecurringPositionProposal(aRecurringPositionProposal.getTradingPartners()),
+				HttpStatus.OK);
 	}
 }

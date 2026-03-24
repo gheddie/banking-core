@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.postgresql.core.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,24 +30,27 @@ import de.gravitex.banking.entity.BookingImportItem;
 import de.gravitex.banking.entity.BudgetPlanning;
 import de.gravitex.banking.entity.BudgetPlanningItem;
 import de.gravitex.banking.entity.PurposeCategory;
+import de.gravitex.banking.entity.RecurringPosition;
 import de.gravitex.banking.entity.TradingPartner;
 import de.gravitex.banking.entity.TradingPartnerBookingHistory;
 import de.gravitex.banking.enumerated.ImportType;
 import de.gravitex.banking_core.dto.AccountInfo;
 import de.gravitex.banking_core.dto.BookingCurrent;
-import de.gravitex.banking_core.dto.BookingCurrentItem;
 import de.gravitex.banking_core.dto.BookingFileImportDto;
 import de.gravitex.banking_core.dto.BookingImportSummary;
 import de.gravitex.banking_core.dto.BookingOverview;
 import de.gravitex.banking_core.dto.BookingOverviewPurposeKey;
 import de.gravitex.banking_core.dto.BookingProgress;
 import de.gravitex.banking_core.dto.BudgetPlanningEvaluation;
+import de.gravitex.banking_core.dto.RecurringPositionProposal;
+import de.gravitex.banking_core.dto.TradingPartnerRecurringPositionProposal;
 import de.gravitex.banking_core.dto.TradingPartnersMergeResult;
 import de.gravitex.banking_core.dto.UnprocessedBookingImport;
 import de.gravitex.banking_core.exception.AttachRecurringPositionException;
 import de.gravitex.banking_core.exception.BudgetPlanningException;
 import de.gravitex.banking_core.exception.ImportDirectoryMandatoryException;
 import de.gravitex.banking_core.exception.MergeTradingPartnersException;
+import de.gravitex.banking_core.exception.RecurringPositionProposalException;
 import de.gravitex.banking_core.importer.KreisSparKasseCsvBookingImporter;
 import de.gravitex.banking_core.importer.VolksbankCsvBookingImporter;
 import de.gravitex.banking_core.importer.base.BookingImporter;
@@ -58,15 +60,18 @@ import de.gravitex.banking_core.repository.BookingImportRepository;
 import de.gravitex.banking_core.repository.BookingRepository;
 import de.gravitex.banking_core.repository.BudgetPlanningRepository;
 import de.gravitex.banking_core.repository.PurposeCategoryRepository;
+import de.gravitex.banking_core.repository.RecurringPositionRepository;
 import de.gravitex.banking_core.repository.TradingPartnerBookingHistoryRepository;
 import de.gravitex.banking_core.repository.TradingPartnerRepository;
 import de.gravitex.banking_core.repository.util.PotientallyReferenced;
 import de.gravitex.banking_core.service.util.BookingCurrentModel;
+import de.gravitex.banking_core.service.util.BookingMixMode;
 import de.gravitex.banking_core.service.util.BookingProgressByTradingKey;
 import de.gravitex.banking_core.service.util.ImportDescriptor;
 import de.gravitex.banking_core.service.util.LocalDateFromStringParser;
 import de.gravitex.banking_core.service.util.LocalDateRange;
 import de.gravitex.banking_core.service.util.ShortestBookingInterval;
+import de.gravitex.banking_core.service.util.recurringposition.RecurringPositionLookup;
 import de.gravitex.banking_core.util.DateUtil;
 import de.gravitex.banking_core.util.StringHelper;
 import de.gravitex.banking_core.util.db.DatabaseAdministrator;
@@ -102,15 +107,18 @@ public class BankingService {
 
 	@Autowired
 	private PurposeCategoryRepository purposeCategoryRepository;
-	
+
 	@Autowired
 	private TradingPartnerBookingHistoryRepository tradingPartnerBookingHistoryRepository;
+	
+	@Autowired
+	private RecurringPositionRepository recurringPositionRepository;
 
 	@Autowired
 	DataIntegrityService integrityService;
 
 	private DatabaseTypeInfo databaseInfo;
-
+	
 	private static final Map<ImportType, BookingImporter> IMPORTERS = new HashMap<>();
 	static {
 		IMPORTERS.put(ImportType.CSV_VB, new VolksbankCsvBookingImporter());
@@ -120,7 +128,8 @@ public class BankingService {
 	private void checkImportRoot() {
 		Path path = Paths.get(databaseInfo.getImportRootDirectory());
 		if (!Files.exists(path)) {
-			throw new IllegalArgumentException("import root {" + databaseInfo.getImportRootDirectory() + "} does not exist!!!");
+			throw new IllegalArgumentException(
+					"import root {" + databaseInfo.getImportRootDirectory() + "} does not exist!!!");
 		}
 	}
 
@@ -128,24 +137,17 @@ public class BankingService {
 	private List<BookingFileImportDto> importFiles(String directoryPath, Account account,
 			ImportDescriptor importDescriptor) {
 		/*
-		List<BookingFileImportDto> result = new ArrayList<>();
-		File directory = new File(directoryPath);
-		File[] listedFiles = directory.listFiles();
-		if (listedFiles != null && listedFiles.length > 0) {
-			for (File file : listedFiles) {
-				List<Booking> fileResult = importFile(account, file);
-				if (fileResult != null && !fileResult.isEmpty()) {
-					BookingFileImportDto dto = new BookingFileImportDto();
-					dto.setImportedBookings(fileResult);
-					dto.setFileName(file.getName());
-					result.add(dto);
-				}
-			}
-		}
-		*/
+		 * List<BookingFileImportDto> result = new ArrayList<>(); File directory = new
+		 * File(directoryPath); File[] listedFiles = directory.listFiles(); if
+		 * (listedFiles != null && listedFiles.length > 0) { for (File file :
+		 * listedFiles) { List<Booking> fileResult = importFile(account, file); if
+		 * (fileResult != null && !fileResult.isEmpty()) { BookingFileImportDto dto =
+		 * new BookingFileImportDto(); dto.setImportedBookings(fileResult);
+		 * dto.setFileName(file.getName()); result.add(dto); } } }
+		 */
 		return new ArrayList<BookingFileImportDto>();
 	}
-	
+
 	public BookingImportSummary importFile(Account account, String aImportFileName) {
 		ImportDescriptor importDescriptor = getImportDescriptor(account);
 		File file = importDescriptor.getImportFile(aImportFileName);
@@ -156,13 +158,13 @@ public class BankingService {
 
 	private void moveFileToProcessed(File aBookingFile, ImportDescriptor aImportDescriptor) {
 		if (databaseInfo.moveProcessedImports()) {
-			aBookingFile.renameTo(new File(aImportDescriptor.getProcessedFilePath() + "\\" + aBookingFile.getName()));	
-		}			
+			aBookingFile.renameTo(new File(aImportDescriptor.getProcessedFilePath() + "\\" + aBookingFile.getName()));
+		}
 	}
 
 	public BookingImportSummary importFile(Account account, File file) {
-		List<Booking> generatedBookings = getImporter(account.getCreditInstitute().getImportType()).generateBookings(file,
-				account);
+		List<Booking> generatedBookings = getImporter(account.getCreditInstitute().getImportType())
+				.generateBookings(file, account);
 		BookingImportSummary summary = new BookingImportSummary();
 		summary.setBookingFileName(file.getAbsolutePath());
 		if (generatedBookings != null && !generatedBookings.isEmpty()) {
@@ -183,9 +185,9 @@ public class BankingService {
 			if (persistedBookings == null || persistedBookings.isEmpty()) {
 				logger.info("Keine neuen Umsätze in Datei[" + file.getName() + "] --> kein Import erstellt!!!");
 			}
-			createImport(file, account, persistedBookings);			
+			createImport(file, account, persistedBookings);
 			logger.info(generatedBookingsMap.size() + " bookings of {" + generatedBookings.size() + "} if file {"
-					+ file.getAbsolutePath() + "} imported...");						
+					+ file.getAbsolutePath() + "} imported...");
 			summary.setImportedBookings(persistedBookings);
 			summary.setIgnoredBookings(new ArrayList<>(generatedBookingsMap.values()));
 			return summary;
@@ -356,7 +358,7 @@ public class BankingService {
 		if (aTradingPartners == null || aTradingPartners.isEmpty()) {
 			throw new MergeTradingPartnersException("no trading partners provided to merge!!!");
 		}
-		
+
 		if (!(aTradingPartners.size() > 1)) {
 			throw new MergeTradingPartnersException("at least 2 trading partners must be provided to merge!!!");
 		}
@@ -401,7 +403,7 @@ public class BankingService {
 			historize(aBookingToSwitch);
 			aBookingToSwitch.setTradingPartner(newTradingPartner);
 			bookingRepository.save(aBookingToSwitch);
-			mergeTradingPartners.addSwitchedBooking(aBookingToSwitch);			
+			mergeTradingPartners.addSwitchedBooking(aBookingToSwitch);
 		}
 		// reparent given trading partners
 		for (TradingPartner aTradingPartner : aTradingPartners) {
@@ -444,12 +446,12 @@ public class BankingService {
 		Map<LocalDate, List<Booking>> byDate = new HashMap<>();
 		for (Booking aBooking : bookings) {
 			if (aBooking.getAmount().compareTo(BigDecimal.ZERO) > 0
-					&& !aTradingPartner.getRecurringPosition().getIncoming()) {
+					&& !aTradingPartner.getRecurringPosition().isIncoming()) {
 				throw new AttachRecurringPositionException(aTradingPartner,
 						"unsuitable amount (" + aBooking.getAmount() + ") detected!!!");
 			}
 			if (aBooking.getAmount().compareTo(BigDecimal.ZERO) < 0
-					&& aTradingPartner.getRecurringPosition().getIncoming()) {
+					&& aTradingPartner.getRecurringPosition().isIncoming()) {
 				throw new AttachRecurringPositionException(aTradingPartner,
 						"unsuitable amount (" + aBooking.getAmount() + ") detected!!!");
 			}
@@ -489,7 +491,8 @@ public class BankingService {
 	public BookingProgress createBookingProgress(BookingProgress aBookingProgress) {
 		logger.info("creating booking process (" + aBookingProgress.getStartDate() + "-" + aBookingProgress.getEndDate()
 				+ ") for {" + aBookingProgress.getTradingPartners().size() + "} trading partners...");
-		List<Booking> bookingsInRange = bookingRepository.findBookingsInRange(aBookingProgress.getStartDate(), aBookingProgress.getEndDate());
+		List<Booking> bookingsInRange = bookingRepository.findBookingsInRange(aBookingProgress.getStartDate(),
+				aBookingProgress.getEndDate());
 		Map<String, List<Booking>> mappedByTradingKey = new HashMap<>();
 		for (Booking aBookingInRange : bookingsInRange) {
 			String tradingKey = aBookingInRange.getTradingPartner().getTradingKey();
@@ -516,13 +519,13 @@ public class BankingService {
 				continue;
 			}
 			UnprocessedBookingImport unprocessed = new UnprocessedBookingImport();
-			unprocessed.setBookingFileName(aFile.getName());			
+			unprocessed.setBookingFileName(aFile.getName());
 			unprocessed.setFileDate(parser.parseDate(aFile.getName()));
 			result.add(unprocessed);
-		}		
+		}
 		return result;
 	}
-	
+
 	private String createBookingKey(Booking aBooking) {
 
 		List<String> tmp = new ArrayList<>();
@@ -547,15 +550,15 @@ public class BankingService {
 
 		return key;
 	}
-	
-    @PostConstruct
-    private void postConstruct() {    	
-		databaseInfo = new DatabaseAdministrator().getDatabaseInfoForDriverClass(databaseDriverClass);
-    }
 
-	public BookingOverview createBookingOverview(Account account, LocalDate aDateFrom, LocalDate aDateUntil) {		
-		BookingOverview bookingOverview = new BookingOverview();		
-		LocalDateRange dateRange = LocalDateRange.forDates(aDateFrom, aDateUntil);		
+	@PostConstruct
+	private void postConstruct() {
+		databaseInfo = new DatabaseAdministrator().getDatabaseInfoForDriverClass(databaseDriverClass);
+	}
+
+	public BookingOverview createBookingOverview(Account account, LocalDate aDateFrom, LocalDate aDateUntil) {
+		BookingOverview bookingOverview = new BookingOverview();
+		LocalDateRange dateRange = LocalDateRange.forDates(aDateFrom, aDateUntil);
 		List<Booking> bookings = bookingRepository.findBookingsByAccountInRange(dateRange.getFromDate(),
 				dateRange.getUntilDate(), account);
 		logger.info("found {" + bookings.size() + "} bookings for creating overview for account {" + account.getName()
@@ -572,13 +575,13 @@ public class BankingService {
 					bot.setPurposeKey(purposeKey);
 					bookingsByPurposeKey.put(purposeKey, bot);
 				}
-				bookingsByPurposeKey.get(purposeKey).addBooking(aBooking);				
+				bookingsByPurposeKey.get(purposeKey).addBooking(aBooking);
 			} else {
 				// nicht zugeordnet
 				unassignedFound = true;
 				unassignedPurpose.addBooking(aBooking);
 			}
-		}		
+		}
 		List<BookingOverviewPurposeKey> list = new ArrayList<>();
 		for (String tradingKey : bookingsByPurposeKey.keySet()) {
 			list.add(bookingsByPurposeKey.get(tradingKey).finish());
@@ -586,31 +589,121 @@ public class BankingService {
 		if (unassignedFound) {
 			list.add(unassignedPurpose.finish());
 		}
-		bookingOverview.setBookingOverviewTradingKeys(list);		
+		bookingOverview.setBookingOverviewTradingKeys(list);
 		return bookingOverview;
 	}
 
-	public BookingCurrent createBookingCurrent(TradingPartner aTradingPartner) {				
-		
+	public BookingCurrent createBookingCurrent(TradingPartner aTradingPartner) {
+
 		BookingCurrent bookingCurrent = new BookingCurrent();
 		bookingCurrent.setTradingPartner(aTradingPartner);
-		
+
 		List<Booking> bookings = bookingRepository.findByTradingPartnerOrderByBookingDateAsc(aTradingPartner);
-		
+
 		LocalDate aDateFrom = bookings.get(0).getBookingDate();
 		LocalDate aDateUntil = bookings.get(bookings.size() - 1).getBookingDate();
-		
-		bookingCurrent.setFromDate(aDateFrom);		
-		bookingCurrent.setUntilDate(aDateUntil);					
-		
+
+		bookingCurrent.setFromDate(aDateFrom);
+		bookingCurrent.setUntilDate(aDateUntil);
+
 		BookingCurrentModel model = new BookingCurrentModel();
 		model.initForRange(aDateFrom, aDateUntil);
 		for (Booking aBooking : bookings) {
 			model.accept(aBooking.getBookingDate(), aBooking.getAmount());
 		}
-		
+
 		bookingCurrent.setItems(model.getItemsSorted(true));
-		
+
 		return bookingCurrent;
+	}
+
+	public RecurringPositionProposal createRecurringPositionProposal(List<TradingPartner> aTradingPartners) {
+		if (aTradingPartners  == null || aTradingPartners.isEmpty()) {
+			aTradingPartners = tradingPartnerRepository.findAll();
+		}
+		List<RecurringPosition> recurringPositions = recurringPositionRepository.findAll();
+		RecurringPositionProposal result = new RecurringPositionProposal();
+		List<TradingPartnerRecurringPositionProposal> proposals = new ArrayList<>();
+		for (TradingPartner aTradingPartner : aTradingPartners) {			
+			List<Booking> bookingsByTradingPartner = bookingRepository
+					.findByTradingPartnerOrderByBookingDateAsc(aTradingPartner);
+			List<RecurringPosition> suitables = new ArrayList<>();
+			for (RecurringPosition aRecurringPosition : prepareRecurringPositions(recurringPositions, bookingsByTradingPartner)) {				
+				boolean suitable = isRecurringPositionSuitable(aTradingPartner, aRecurringPosition,
+						bookingsByTradingPartner);
+				if (suitable) {
+					System.out.println(aTradingPartner.getTradingKey() + " --> " + aRecurringPosition + " [SUITABLE]");					
+					suitables.add(aRecurringPosition);
+				} else {
+					System.out.println(
+							aTradingPartner.getTradingKey() + " --> " + aRecurringPosition + " [NOT SUITABLE]");
+				}
+			}
+			if (suitables.size() > 1) {
+				List<String> tmp = new ArrayList<>();
+				for (RecurringPosition aSuitable : suitables) {					
+					tmp.add(aSuitable.toString());
+				}
+				throw new RecurringPositionProposalException(
+						"more than one suitable recurring position found for trading partner{"
+								+ aTradingPartner.getTradingKey() + "} ["
+								+ StringHelper.seperateList(tmp.toArray(new String[tmp.size()]), ",") + "]!!!",
+						null);
+			}
+			if (!suitables.isEmpty()) {
+				TradingPartnerRecurringPositionProposal byTradingPartnerProposal = new TradingPartnerRecurringPositionProposal();
+				byTradingPartnerProposal.setRecurringPosition(suitables.get(0));
+				byTradingPartnerProposal.setTradingPartner(aTradingPartner);				
+				proposals.add(byTradingPartnerProposal);
+			}
+		}
+		result.setTradingPartnerRecurringPositionProposals(proposals);
+		return result;
+	}
+
+	private List<RecurringPosition> prepareRecurringPositions(List<RecurringPosition> aRecurringPositions, List<Booking> aBookingsByTradingPartner) {		
+		BookingMixMode mixedMode = getMixedMode(aBookingsByTradingPartner);
+		if (mixedMode.equals(BookingMixMode.MIXED)) {
+			return new ArrayList<>();
+		}		
+		List<RecurringPosition> result = new ArrayList<>();
+		for (RecurringPosition aRecurringPosition : aRecurringPositions) {
+			if (aRecurringPosition.isIncoming() && mixedMode.equals(BookingMixMode.ALL_INCOMING)) {
+				result.add(aRecurringPosition);
+			}
+			if (!aRecurringPosition.isIncoming() && mixedMode.equals(BookingMixMode.ALL_OUTGOING)) {
+				result.add(aRecurringPosition);
+			}
+		}
+		return result;
+	}
+
+	private BookingMixMode getMixedMode(List<Booking> aBookings) {
+		List<Booking> positives = new ArrayList<>();
+		List<Booking> negtives = new ArrayList<>();
+		for (Booking aBooking : aBookings) {
+			if (isPositiveBooking(aBooking)) {				
+				positives.add(aBooking);
+			} else {
+				negtives.add(aBooking);
+			}
+		}		
+		if (!positives.isEmpty() && !negtives.isEmpty()) {
+			return BookingMixMode.MIXED;	
+		} else if (!positives.isEmpty()) {
+			return BookingMixMode.ALL_INCOMING;
+		} else {
+			return BookingMixMode.ALL_OUTGOING;
+		}				
+	}
+
+	private boolean isPositiveBooking(Booking aBooking) {
+		return aBooking.getAmount().compareTo(BigDecimal.ZERO) >= 0;
+	}
+
+	public boolean isRecurringPositionSuitable(TradingPartner aTradingPartner, RecurringPosition aRecurringPosition,
+			List<Booking> aBookingsByTradingPartner) {
+
+		return new RecurringPositionLookup(aBookingsByTradingPartner, aRecurringPosition.getRecurringInterval()).isSuitable();
 	}
 }

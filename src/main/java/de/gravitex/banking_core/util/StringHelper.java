@@ -65,4 +65,10 @@ public class StringHelper {
 		}		
 		return result;
 	}
+	
+    public static int getPercentage(int aPassedCount, int aTotalCount) {
+
+        int percentage = (int) ((aPassedCount * 100.0f) / aTotalCount);
+        return percentage;
+    }
 }
